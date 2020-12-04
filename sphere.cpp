@@ -31,7 +31,7 @@ Hit Sphere::intersect(const Ray &ray)
     * Insert calculation of ray/sphere intersection here. 
     *
     * You have the sphere's center (C) and radius (r) as well as
-    * the ray's origin (ray.O) and direction (ray.D).
+    * the ray's origin (ray.Origin) and direction (ray.Direction).
     *
     * If the ray does not intersect the sphere, return Hit::NO_HIT().
     * Otherwise, return an instance of Hit() with the distance of the
@@ -40,8 +40,8 @@ Hit Sphere::intersect(const Ray &ray)
 
     // place holder for actual intersection calculation
 
-    Vector OC = (position - ray.O).normalized();
-    if (OC.dot(ray.D) < 0.999) {
+    Vector OC = (position - ray.Origin).normalized();
+    if (OC.dot(ray.Direction) < 0.999) {
         return Hit::NO_HIT();
     }
     double t = 1000;
@@ -57,5 +57,5 @@ Hit Sphere::intersect(const Ray &ray)
 
     Vector N /* = ... */;
 
-    return Hit(t,N);
+    return Hit(t, Point{}, Vector{}, ray);
 }

@@ -21,23 +21,22 @@
 
 Color Scene::trace(const Ray &ray)
 {
-    // Find hit object and distance
-    Hit min_hit(std::numeric_limits<double>::infinity(),Vector());
 
     auto hit_iterator = std::min_element(
             std::begin(objects), std::end(objects),
             [&ray](const std::unique_ptr<Object>& o1, const std::unique_ptr<Object>& o2)
-            { return Hit(o1->intersect(ray)).t < Hit(o2->intersect(ray)).t; });
+            { return Hit(o1->intersect(ray)).Distance < Hit(o2->intersect(ray)).Distance; });
 
     // No hit? Return background color.
-    if ((*hit_iterator)->intersect(ray).t == std::numeric_limits<double>::infinity()) return Color(0.0, 0.0, 0.0);
+    Hit current_hit = (*hit_iterator)->intersect(ray);
+    if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
 
     std::unique_ptr<Object>& obj = *hit_iterator;
 
     Material& material = obj->material;            //the hit objects material
-    Point hit = ray.at(min_hit.t);                 //the hit point
-    Vector N = min_hit.N;                          //the normal at hit point
-    Vector V = -ray.D;                             //the view vector
+    Point hit = ray.at(current_hit.Distance);                 //the hit point
+    Vector N = current_hit.Normal;                          //the normal at hit point
+    Vector V = -ray.Direction;                             //the view vector
 
 
     /****************************************************
