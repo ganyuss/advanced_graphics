@@ -23,9 +23,9 @@ bool Image::set_extent(int width, int height)
 {
     _width = width;
     _height = height;
-    if (_pixel) delete[] _pixel;
-    _pixel = size() > 0 ? new Color[size()] : 0;
-    return _pixel != 0;
+    delete[] _pixel;
+    _pixel = size() > 0 ? new Color[size()] : nullptr;
+    return _pixel != nullptr;
 }
 
 
@@ -33,7 +33,7 @@ void Image::write_png(const char* filename) const
 {
     std::vector<unsigned char> image;
     image.resize(_width * _height * 4);
-    std::vector<unsigned char>::iterator imageIterator = image.begin();
+    auto imageIterator = image.begin();
     Color *currentPixel = _pixel;
     while (imageIterator != image.end()) {
         *imageIterator = (unsigned char)(currentPixel->r * 255.0);
@@ -58,7 +58,7 @@ void Image::read_png(const char* filename)
 
     //decode the png
     LodePNG::Decoder decoder;
-    decoder.decode(image, buffer.empty() ? 0 : &buffer[0], (unsigned)buffer.size());
+    decoder.decode(image, buffer.empty() ? nullptr : &buffer[0], (unsigned)buffer.size());
     std::cout << decoder.getChannels() << std::endl;
     std::cout << decoder.getBpp() << std::endl;
 
@@ -67,8 +67,8 @@ void Image::read_png(const char* filename)
         std::cerr << "Either convert your image or change the sourcecode." << std::endl;
         exit(1);
     }
-    int w = decoder.getWidth();
-    int h = decoder.getHeight();
+    int w = static_cast<int>(decoder.getWidth());
+    int h = static_cast<int>(decoder.getHeight());
     set_extent(w,h);
 
     // now convert the image data
