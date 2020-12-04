@@ -15,17 +15,31 @@
 //
 
 #include <algorithm>
+#include <functional>
 #include "scene.h"
 #include "material.h"
+
+
+template<typename Iterator, typename Operator>
+Iterator optimized_min_element(const Iterator& begin, const Iterator& end, Operator ope) {
+    std::vector<decltype(ope(*begin))> values;
+    values.reserve(std::distance(begin, end));
+
+    for (auto it = begin; it != end; ++it)
+        values.push_back(ope(*it));
+
+    auto minValueIter = std::min_element(values.begin(), values.end());
+    return begin + std::distance(values.begin(), minValueIter);
+}
 
 
 Color Scene::trace(const Ray &ray)
 {
 
-    auto hit_iterator = std::min_element(
+    auto hit_iterator = optimized_min_element(
             std::begin(objects), std::end(objects),
-            [&ray](const std::unique_ptr<Object>& o1, const std::unique_ptr<Object>& o2)
-            { return Hit(o1->intersect(ray)).Distance < Hit(o2->intersect(ray)).Distance; });
+            [&ray](const std::unique_ptr<Object>& o) { return Hit(o->intersect(ray)).Distance; }
+    );
 
     // No hit? Return background color.
     Hit current_hit = (*hit_iterator)->intersect(ray);
