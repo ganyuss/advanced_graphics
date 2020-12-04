@@ -30,7 +30,7 @@ Color Scene::trace(const Ray &ray)
             { return Hit(o1->intersect(ray)).t < Hit(o2->intersect(ray)).t; });
 
     // No hit? Return background color.
-    if (Hit((*hit_iterator)->intersect(ray)) == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
+    if ((*hit_iterator)->intersect(ray).t == std::numeric_limits<double>::infinity()) return Color(0.0, 0.0, 0.0);
 
     std::unique_ptr<Object>& obj = *hit_iterator;
 
