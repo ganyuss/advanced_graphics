@@ -25,10 +25,10 @@ Hit Sphere::intersect(const Ray &ray)
 
     // Intersection point calculation
     // source: https://fiftylinesofcode.com/ray-sphere-intersection/
-    Vector o_minus_c = ray.Origin - position;
+    Vector o_minus_c = ray.Origin - Position;
 
     double p = ray.Direction.dot(o_minus_c);
-    double q = o_minus_c.dot(o_minus_c) - (r * r);
+    double q = o_minus_c.dot(o_minus_c) - (Radius * Radius);
 
     double discriminant = (p * p) - q;
     if (discriminant < 0.0f)
@@ -41,7 +41,7 @@ Hit Sphere::intersect(const Ray &ray)
 
     // Normal calculation
     Point intersectionPoint = ray.Origin + ray.Direction * distanceToOrigin;
-    Vector normal = (-position + intersectionPoint).normalized();
+    Vector normal = (-Position + intersectionPoint).normalized();
 
     return {distanceToOrigin, intersectionPoint, normal, ray};
 }
