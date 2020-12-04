@@ -39,16 +39,9 @@ Hit Sphere::intersect(const Ray &ray)
     double dRoot = std::sqrt(discriminant);
     double distanceToOrigin = -p - dRoot;
 
-    /****************************************************
-    * RT1.2: NORMAL CALCULATION
-    *
-    * Given: t, C, r
-    * Sought: N
-    * 
-    * Insert calculation of the sphere's normal at the intersection point.
-    ****************************************************/
+    // Normal calculation
+    Point intersectionPoint = ray.Origin + ray.Direction * distanceToOrigin;
+    Vector normal = (-position + intersectionPoint).normalized();
 
-    Vector N /* = ... */;
-
-    return Hit(distanceToOrigin, Point{}, Vector{}, ray);
+    return {distanceToOrigin, intersectionPoint, normal, ray};
 }
