@@ -38,6 +38,7 @@ Hit Sphere::intersect(const Ray &ray)
 
     double dRoot = std::sqrt(discriminant);
     double distanceToOrigin = -p - dRoot;
+    // The other intersection point is dismissed, we keep only the closest one
 
     // Normal calculation
     Point intersectionPoint = ray.Origin + ray.Direction * distanceToOrigin;

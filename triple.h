@@ -224,4 +224,11 @@ typedef Triple Color;
 typedef Triple Point;
 typedef Triple Vector;
 
+Color inline merge(const Color &c1, const Color &c2) {
+    Color output = c1 + c2;
+    for (double & i : output.data)
+        if (i > 1.) i = 1.;
+    return output;
+}
+
 #endif /* end of include guard: TRIPLE_H_SEVQHPTA */

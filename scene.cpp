@@ -71,9 +71,13 @@ Color Scene::trace(const Ray &ray)
     *        pow(a,b)           a to the power of b
     ****************************************************/
 
-    Color color = material.color;                  // place holder
+    Color output;
 
-    return color;
+    for (std::unique_ptr<Light> & light_source : lights) {
+        output = merge(output, light_source->computeColorAt(current_hit, material));
+    }
+
+    return output;
 }
 
 void Scene::render(Image &img)

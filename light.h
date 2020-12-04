@@ -21,16 +21,9 @@
 #include <iostream>
 #include <limits>
 #include "triple.h"
+#include "material.h"
 
-class Light
-{
-public:
-    Light(Point pos,Color c) : position(pos), color(c)
-    { }
 
-    Point position;
-    Color color;
-};
 
 class Ray
 {
@@ -39,7 +32,7 @@ public:
     Vector Direction;
 
     Ray(const Point &from, const Vector &dir)
-        : Origin(from), Direction(dir)
+            : Origin(from), Direction(dir)
     { }
 
     Point at(double t) const
@@ -59,7 +52,7 @@ public:
     Ray Source;
 
     Hit(double Distance, Point Position, Vector Normal, Ray Source)
-    : Distance(Distance), Position(Position), Normal(Normal), Source(Source)
+            : Distance(Distance), Position(Position), Normal(Normal), Source(Source)
     { }
 
     static const Hit& NO_HIT() {
@@ -75,9 +68,28 @@ public:
 
 bool inline operator==(const Hit& h1, const Hit& h2) {
     return h1.Distance == h2.Distance
-        && h1.Position == h2.Position
-        && h1.Normal == h2.Normal
-        && h1.Source == h2.Source;
+           && h1.Position == h2.Position
+           && h1.Normal == h2.Normal
+           && h1.Source == h2.Source;
 }
+
+
+class Light
+{
+public:
+    Light(Point Position, Color c) : Position(Position), color(c)
+    { }
+
+    virtual Color computeColorAt(const Hit& hit_point, const Material& material) const {
+        Vector ray_reflection = hit_point.Source.Direction
+                - 2 * hit_point.Source.Direction.dot(hit_point.Normal.normalized())
+                        * hit_point.Normal;
+
+        return (hit_point.Normal + Vector{1, 1, 1}) / 2;
+    }
+
+    Point Position;
+    Color color;
+};
 
 #endif /* end of include guard: LIGHT_H_PG2BAJRA */
