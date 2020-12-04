@@ -22,29 +22,22 @@
 
 Hit Sphere::intersect(const Ray &ray)
 {
-    /****************************************************
-    * RT1.1: INTERSECTION CALCULATION
-    *
-    * Given: ray, position, r
-    * Sought: intersects? if true: *t
-    * 
-    * Insert calculation of ray/sphere intersection here. 
-    *
-    * You have the sphere's center (C) and radius (r) as well as
-    * the ray's origin (ray.Origin) and direction (ray.Direction).
-    *
-    * If the ray does not intersect the sphere, return Hit::NO_HIT().
-    * Otherwise, return an instance of Hit() with the distance of the
-    * intersection point from the ray origin as t and the normal ad N (see example).
-    ****************************************************/
 
-    // place holder for actual intersection calculation
+    // Intersection point calculation
+    // source: https://fiftylinesofcode.com/ray-sphere-intersection/
+    Vector o_minus_c = ray.Origin - position;
 
-    Vector OC = (position - ray.Origin).normalized();
-    if (OC.dot(ray.Direction) < 0.999) {
+    double p = ray.Direction.dot(o_minus_c);
+    double q = o_minus_c.dot(o_minus_c) - (r * r);
+
+    double discriminant = (p * p) - q;
+    if (discriminant < 0.0f)
+    {
         return Hit::NO_HIT();
     }
-    double t = 1000;
+
+    double dRoot = std::sqrt(discriminant);
+    double distanceToOrigin = -p - dRoot;
 
     /****************************************************
     * RT1.2: NORMAL CALCULATION
@@ -57,5 +50,5 @@ Hit Sphere::intersect(const Ray &ray)
 
     Vector N /* = ... */;
 
-    return Hit(t, Point{}, Vector{}, ray);
+    return Hit(distanceToOrigin, Point{}, Vector{}, ray);
 }
