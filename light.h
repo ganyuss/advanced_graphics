@@ -84,8 +84,26 @@ public:
         Vector ray_reflection = hit_point.Source.Direction
                 - 2 * hit_point.Source.Direction.dot(hit_point.Normal.normalized())
                         * hit_point.Normal;
+        ray_reflection.normalize();
+        Vector lightIncidence = Position - hit_point.Position;
+        lightIncidence.normalize();
+        double diffuseFactor = hit_point.Normal.dot(lightIncidence);
+        Color diffuseColor;
+        if (diffuseFactor <= 0){
+            diffuseColor.set(0,0,0);
+        }else {
+            diffuseColor = material.color * material.kd * diffuseFactor;
+        }
 
-        return (hit_point.Normal + Vector{1, 1, 1}) / 2;
+        Color ambientColor = material.color * material.ka;
+
+        double specularFactor = ray_reflection.dot(lightIncidence);
+        if (specularFactor < 0){
+            specularFactor = 0;
+        }
+        Color specularColor = color * material.ks * pow(specularFactor,material.n);
+
+        return diffuseColor + ambientColor + specularColor;
     }
 
     Point Position;
