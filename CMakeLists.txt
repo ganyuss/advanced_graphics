@@ -11,4 +11,5 @@ file(GLOB YAML_SRCS "yaml/*.cpp")
 file(GLOB YAML_HEADERS "yaml/*.h")
 file(GLOB HEADERS "*.h")
 
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc")
 add_executable(hello ${SRCS} ${YAML_SRCS} ${HEADERS} ${YAML_HEADERS})
