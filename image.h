@@ -119,8 +119,8 @@ inline void Image::derivativeAt(float x, float y, float *dx, float *dy) const
 {
     int ix = (int)(x * (_width - 1));
     int iy = (int)(y * (_height - 1));
-    *dx = _pixel[windex(ix,iy+1)].g - _pixel[index(ix,iy)].g;
-    *dy = _pixel[windex(ix+1,iy)].g - _pixel[index(ix,iy)].g;
+    *dx = _pixel[windex(ix,iy+1)].Green() - _pixel[index(ix,iy)].Green();
+    *dy = _pixel[windex(ix+1,iy)].Green() - _pixel[index(ix,iy)].Green();
 }
 
 #endif /* end of include guard: IMAGE_H_IOLFQARK */

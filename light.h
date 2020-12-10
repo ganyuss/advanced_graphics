@@ -88,7 +88,7 @@ public:
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();
         double diffuseFactor = hit_point.Normal.dot(lightIncidence);
-        Color diffuseColor;
+        Color diffuseColor{};
         if (diffuseFactor <= 0){
             diffuseColor.set(0,0,0);
         }else {

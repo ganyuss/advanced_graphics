@@ -29,14 +29,14 @@ class Scene
 private:
     std::vector<std::unique_ptr<Object>> objects;
     std::vector<std::unique_ptr<Light>> lights;
-    Triple eye;
+    Point eye;
 
 public:
     Color trace(const Ray &ray);
     void render(Image &img);
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);
-    void setEye(Triple e);
+    void setEye(Point e);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }
 };

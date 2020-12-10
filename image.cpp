@@ -36,11 +36,11 @@ void Image::write_png(const char* filename) const
     auto imageIterator = image.begin();
     Color *currentPixel = _pixel;
     while (imageIterator != image.end()) {
-        *imageIterator = (unsigned char)(currentPixel->r * 255.0);
+        *imageIterator = (unsigned char)(currentPixel->Red() * 255.0);
         imageIterator++;
-        *imageIterator = (unsigned char)(currentPixel->g * 255.0);
+        *imageIterator = (unsigned char)(currentPixel->Green() * 255.0);
         imageIterator++;
-        *imageIterator = (unsigned char)(currentPixel->b * 255.0);
+        *imageIterator = (unsigned char)(currentPixel->Blue() * 255.0);
         imageIterator++;
         *imageIterator = 255;
         imageIterator++;
@@ -75,11 +75,11 @@ void Image::read_png(const char* filename)
     auto imageIterator = image.begin();
     Color *currentPixel = _pixel;
     while (imageIterator != image.end()) {
-        currentPixel->r = (*imageIterator)/255.0;
+        currentPixel->Red() = (*imageIterator)/255.0;
         imageIterator++;
-        currentPixel->g = (*imageIterator)/255.0;
+        currentPixel->Green() = (*imageIterator)/255.0;
         imageIterator++;
-        currentPixel->b = (*imageIterator)/255.0;
+        currentPixel->Blue() = (*imageIterator)/255.0;
         imageIterator++;
         // Let's just ignore the alpha channel
         imageIterator++; 

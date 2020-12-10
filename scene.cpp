@@ -71,10 +71,10 @@ Color Scene::trace(const Ray &ray)
     *        pow(a,b)           a to the power of b
     ****************************************************/
 
-    Color output;
+    Color output{};
 
     for (std::unique_ptr<Light> & light_source : lights) {
-        output = merge(output, light_source->computeColorAt(current_hit, material));
+        output += light_source->computeColorAt(current_hit, material);
     }
 
     return output;
@@ -89,7 +89,6 @@ void Scene::render(Image &img)
             Point pixel(x+0.5, h-1-y+0.5, 0);
             Ray ray(eye, (pixel-eye).normalized());
             Color col = trace(ray);
-            col.clamp();
             img(x,y) = col;
         }
     }
@@ -105,7 +104,7 @@ void Scene::addLight(std::unique_ptr<Light>&& l)
     lights.push_back(std::move(l));
 }
 
-void Scene::setEye(Triple e)
+void Scene::setEye(Point e)
 {
     eye = e;
 }

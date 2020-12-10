@@ -24,24 +24,24 @@
 #include <assert.h>
 
 // Functions to ease reading from YAML input
+template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
 void operator >> (const YAML::Node& node, Triple& t);
+template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
 Triple parseTriple(const YAML::Node& node);
 
-void operator >> (const YAML::Node& node, Triple& t)
+void operator >> (const YAML::Node& node, Color& t)
 {
     assert(node.size()==3);
-    node[0] >> t.x;
-    node[1] >> t.y;
-    node[2] >> t.z;
+    node[0] >> t.Red();
+    node[1] >> t.Green();
+    node[2] >> t.Blue();
 }
-
-Triple parseTriple(const YAML::Node& node)
+void operator >> (const YAML::Node& node, Vector& t)
 {
-    Triple t;
-    node[0] >> t.x;
-    node[1] >> t.y;
-    node[2] >> t.z;	
-    return t;
+    assert(node.size()==3);
+    node[0] >> t.X();
+    node[1] >> t.Y();
+    node[2] >> t.Z();
 }
 
 Material Raytracer::parseMaterial(const YAML::Node& node)
@@ -105,7 +105,9 @@ bool Raytracer::readScene(const std::string& inputFilename)
             parser.GetNextDocument(doc);
 
             // Read scene configuration options
-            scene.setEye(parseTriple(doc["Eye"]));
+            Vector eye{};
+            doc["Eye"] >> eye;
+            scene.setEye(eye);
 
             // Read and parse the scene objects
             const YAML::Node& sceneObjects = doc["Objects"];
