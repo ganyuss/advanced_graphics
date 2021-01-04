@@ -158,7 +158,7 @@ public:
 
     Color(component red, component green, component blue);
 
-    template <typename Triple, typename = std::enable_if<is_triple_v<Triple>, bool>>
+    template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>>
     explicit Color(const Triple&);
 
     component& Red() { return r; }
@@ -281,7 +281,7 @@ Triple operator*(const Triple& t1, Number n) { Triple output(t1); for (int i = 0
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
 inline Triple operator*(Number n, const Triple& t1) { return t1 * n; }
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
-Triple operator/(const Triple& t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] /= n; return t1; }
+Triple operator/(Triple t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] /= n; return t1; }
 
 
 #endif /* end of include guard: TRIPLE_H_SEVQHPTA */

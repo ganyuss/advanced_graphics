@@ -23,6 +23,10 @@
 #include "light.h"
 #include "object.h"
 #include "image.h"
+#include "yaml/yaml.h"
+
+enum Mode {PHONG, ZBUFFER, NORMAL};
+void operator>>(const YAML::Node &node, Mode &mode);
 
 class Scene
 {
@@ -30,12 +34,16 @@ private:
     std::vector<std::unique_ptr<Object>> objects;
     std::vector<std::unique_ptr<Light>> lights;
     Point eye;
+    Mode mode;
 
 public:
     Color trace(const Ray &ray);
+    Color traceZBuf(const Ray &ray);
+    Color traceNormals(const Ray &ray);
     void render(Image &img);
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);
+    void setMode(Mode mode);
     void setEye(Point e);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }

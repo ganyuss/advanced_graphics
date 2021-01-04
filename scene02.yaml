@@ -1,6 +1,7 @@
 ---
 #  scene02
 
+RenderMode : PHONG
 Eye: [200,200,1000]
 
 Lights:

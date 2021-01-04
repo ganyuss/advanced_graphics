@@ -105,6 +105,11 @@ bool Raytracer::readScene(const std::string& inputFilename)
             parser.GetNextDocument(doc);
 
             // Read scene configuration options
+            Mode mode;
+            doc["RenderMode"] >> mode;
+            scene.setMode(mode);
+
+            // Read scene configuration options
             Vector eye{};
             doc["Eye"] >> eye;
             scene.setEye(eye);
