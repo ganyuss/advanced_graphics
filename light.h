@@ -32,7 +32,7 @@ public:
     Vector Direction;
 
     Ray(const Point &from, const Vector &dir)
-            : Origin(from), Direction(dir)
+            : Origin(from), Direction(dir.normalized())
     { }
 
     Point at(double t) const
