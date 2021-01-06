@@ -230,6 +230,7 @@ public:
     }
 
     double dot(const Vector& other) const;
+    Vector cross(const Vector& other) const;
     inline double norm() const;
     void normalize();
     Vector normalized() const;
@@ -256,7 +257,7 @@ template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, 
 inline bool operator!=(const Triple& t1, const Triple& t2) { return ! (t1 == t2); }
 
 template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
-Triple operator-( const Triple& t1) { Triple output(t1); for (int i = 0; i < 3; ++i) output[i] *= -1; return output; }
+Triple operator-( const Triple& t1) { Triple output(t1); for (int i = 0; i < 3; ++i) output[i] = -output[i]; return output; }
 
 template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
 inline Triple& operator+=(Triple& t1, const Triple& t2) { for (int i = 0; i < 3; ++i) t1[i] += t2[i]; return t1; }

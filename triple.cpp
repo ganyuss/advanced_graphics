@@ -13,6 +13,7 @@
 //
 
 #include "triple.h"
+#include <cmath>
 
 Color::Color(Color::component red, Color::component green, Color::component blue)
     : r(red), g(green), b(blue)
@@ -46,7 +47,7 @@ double Vector::dot(const Vector &other) const {
     return sum;
 }
 
-double Vector::norm() const {
+inline double Vector::norm() const {
     return std::sqrt(X() * X() + Y() * Y() + Z() * Z());
 }
 
@@ -62,4 +63,12 @@ Vector Vector::normalized() const {
     return output;
 }
 
+Vector Vector::cross(const Vector &other) const {
+    Vector output{};
 
+    output.x = y*other.z - z*other.y;
+    output.y = z*other.x - x*other.z;
+    output.z = x*other.y - y*other.x;
+
+    return output;
+}
