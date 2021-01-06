@@ -19,6 +19,7 @@
 #include "light.h"
 #include "image.h"
 #include "yaml/yaml.h"
+#include "Cone.h"
 #include <ctype.h>
 #include <fstream>
 #include <assert.h>
@@ -62,11 +63,20 @@ std::unique_ptr<Object> Raytracer::parseObject(const YAML::Node& node)
     node["type"] >> objectType;
 
     if (objectType == "sphere") {
-        Point pos;
+        Point pos{};
         node["position"] >> pos;
         double r;
         node["radius"] >> r;
         returnObject = std::make_unique<Sphere>(pos, r);
+    }
+    else if (objectType == "cone") {
+        Point pos{};
+        node["position"] >> pos;
+        double r;
+        node["radius"] >> r;
+        Vector up{};
+        node["up"] >> up;
+        returnObject = std::make_unique<Cone>(pos, r, up);
     }
 
     if (returnObject) {
