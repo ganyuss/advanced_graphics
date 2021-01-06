@@ -1,11 +1,8 @@
-# Nous voulons un cmake "récent" pour utiliser les dernières fonctionnalités
 cmake_minimum_required(VERSION 3.0)
 
-# Notre projet est étiqueté hello
-project(hello)
+project(RayTracer)
 
-# Crée des variables avec les fichiers à compiler
-set(SRCS main.cpp raytracer.cpp sphere.cpp light.cpp material.cpp image.cpp triple.cpp lodepng.cpp scene.cpp)
+set(SRCS main.cpp raytracer.cpp sphere.cpp light.cpp material.cpp image.cpp triple.cpp lodepng.cpp scene.cpp Cone.cpp Cone.h commongeometry.h commongeometry.cpp Plane.cpp Plane.h)
 file(GLOB YAML_SRCS "yaml/*.cpp")
 
 file(GLOB YAML_HEADERS "yaml/*.h")
