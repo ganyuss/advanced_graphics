@@ -78,6 +78,13 @@ std::unique_ptr<Object> Raytracer::parseObject(const YAML::Node& node)
         node["up"] >> up;
         returnObject = std::make_unique<Cone>(pos, r, up);
     }
+    else if (objectType == "plane") {
+        Point pos{};
+        node["position"] >> pos;
+        Vector norm{};
+        node["normal"] >> norm;
+        returnObject = std::make_unique<Plane>(pos, norm);
+    }
 
     if (returnObject) {
         // read the material and attach to object

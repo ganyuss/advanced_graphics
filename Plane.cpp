@@ -14,3 +14,21 @@ Point Plane::getIntersectionPoint(const Ray& ray) const {
     double t = shortestPath.norm() / rayOrthogonal.norm();
     return ray.at(t);
 }
+
+Hit Plane::intersect(const Ray &ray) {
+    Vector rayOrthogonal = project(ray.Direction, Normal);
+
+    Vector shortestPath = project(Origin - ray.Origin, Normal);
+
+    double t = shortestPath.norm() / rayOrthogonal.norm();
+
+    if (shortestPath.dot(rayOrthogonal) < 0)
+        return Hit::NO_HIT();
+
+    return Hit(
+            t,
+            ray.at(t),
+            -shortestPath.normalized(),
+            ray
+        );
+}

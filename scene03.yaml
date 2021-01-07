@@ -1,7 +1,7 @@
 ---
 #  scene03
 
-RenderMode : PHONG
+RenderMode : ZBUFFER
 Eye: [200,200,1000]
 
 Lights:
@@ -17,17 +17,8 @@ Objects:
     position: [90,220,-100]
     radius: 50
     up: [150,150,0]
-    material: # blue
+    material:
       color: [0.0,0.0,1.0]
-      ka: 0.0
-      kd: 0.7
-      ks: 0.0
-      n: 64
-  - type: sphere
-    position: [ 240,370,-100 ]
-    radius: 10
-    material: # blue
-      color: [ 0.0,0.0,1.0 ]
       ka: 0.0
       kd: 0.7
       ks: 0.0
@@ -35,7 +26,7 @@ Objects:
   - type: sphere
     position: [90,220,-100]
     radius: 50
-    material: # blue
+    material:
       color: [ 0.0,0.0,1.0 ]
       ka: 0.0
       kd: 0.7
@@ -45,8 +36,17 @@ Objects:
     position: [200,90,-100]
     radius: 30
     up: [-50,-50,0]
-    material: # blue
+    material:
       color: [0.0,1.0,1.0]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: plane
+    position: [ 500,50,-100 ]
+    normal: [ 1, 1 ,0 ]
+    material:
+      color: [ 0.0,0.0,1.0 ]
       ka: 0.0
       kd: 0.7
       ks: 0.0

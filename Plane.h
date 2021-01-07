@@ -8,14 +8,16 @@
 
 #include "triple.h"
 #include "light.h"
+#include "object.h"
 
-class Plane {
+class Plane : public Object {
 public:
     Plane(Point Origin, Vector Normal) :
             Origin(Origin), Normal(Normal)
     { }
 
     Point getIntersectionPoint(const Ray &) const;
+    Hit intersect(const Ray &ray) override;
 
 private:
 
