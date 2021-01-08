@@ -22,7 +22,6 @@
 
 Hit Sphere::intersect(const Ray &ray)
 {
-
     // Intersection point calculation
     // source: https://fiftylinesofcode.com/ray-sphere-intersection/
     Vector o_minus_c = ray.Origin - Position;

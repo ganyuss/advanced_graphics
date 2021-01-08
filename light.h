@@ -95,15 +95,14 @@ public:
             diffuseColor = material.color * material.kd * diffuseFactor;
         }
 
-        Color ambientColor = material.color * material.ka;
-
         double specularFactor = ray_reflection.dot(lightIncidence);
         if (specularFactor < 0){
             specularFactor = 0;
         }
         Color specularColor = color * material.ks * pow(specularFactor,material.n);
 
-        return diffuseColor + ambientColor + specularColor;
+        return diffuseColor + specularColor;
+
     }
 
     Point Position;

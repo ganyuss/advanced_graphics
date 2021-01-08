@@ -74,10 +74,21 @@ Color Scene::trace(const Ray &ray)
     *        pow(a,b)           a to the power of b
     ****************************************************/
 
-    Color output{};
+    Color output = material.color * material.ka;
 
     for (std::unique_ptr<Light> & light_source : lights) {
-        output += light_source->computeColorAt(current_hit, material);
+        Vector Dposition = current_hit.Position + current_hit.Normal * 0.1;
+        Ray newRay = Ray(Dposition, light_source->Position - Dposition );
+        auto hit_iterator_new = optimized_min_element(
+                std::begin(objects), std::end(objects),
+                [&newRay](const std::unique_ptr<Object>& o) { return Hit(o->intersect(newRay)).Distance; }
+        );
+        Hit current_hit_new = (*hit_iterator_new)->intersect(newRay);
+        //output = (*hit_iterator_new)->material.color;
+        if (current_hit_new.Distance >= (light_source->Position - Dposition).norm()){
+            output += light_source->computeColorAt(current_hit, material);
+            //output = (*hit_iterator_new)->material.color;
+        }
     }
 
     return output;
