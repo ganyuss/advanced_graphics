@@ -18,7 +18,6 @@
 #include <functional>
 #include <stdexcept>
 #include "scene.h"
-#include "material.h"
 
 void operator>>(const YAML::Node &node, Mode &mode){
     auto s = node.Read<std::string>();

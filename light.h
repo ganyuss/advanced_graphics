@@ -43,6 +43,10 @@ bool inline operator==(const Ray &r1, const Ray &r2) {
     return r1.Origin == r2.Origin && r1.Direction == r2.Direction;
 }
 
+bool inline operator!=(const Ray &r1, const Ray &r2) {
+    return ! (r1 == r2);
+}
+
 class Hit
 {
 public:
@@ -71,6 +75,10 @@ bool inline operator==(const Hit& h1, const Hit& h2) {
            && h1.Position == h2.Position
            && h1.Normal == h2.Normal
            && h1.Source == h2.Source;
+}
+
+bool inline operator!=(const Hit& h1, const Hit& h2) {
+    return ! (h1 == h2);
 }
 
 
