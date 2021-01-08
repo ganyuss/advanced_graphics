@@ -10,7 +10,7 @@ Hit Cone::intersect(const Ray &ray) {
 
     Hit slopeHit = getHitOnSlope(ray);
 
-    Point planIntersection = DiskPlan.getIntersectionPoint(ray);
+    Point planIntersection = DiskPlan.intersect(ray).Position;
 
     if ((planIntersection-Position).norm() < Radius) {
 

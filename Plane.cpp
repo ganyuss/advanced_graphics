@@ -5,16 +5,6 @@
 #include "Plane.h"
 #include "commongeometry.h"
 
-Point Plane::getIntersectionPoint(const Ray& ray) const {
-
-    Vector rayOrthogonal = project(ray.Direction, Normal);
-
-    Vector shortestPath = project(Origin - ray.Origin, Normal);
-
-    double t = shortestPath.norm() / rayOrthogonal.norm();
-    return ray.at(t);
-}
-
 Hit Plane::intersect(const Ray &ray) {
     Vector rayOrthogonal = project(ray.Direction, Normal);
 
