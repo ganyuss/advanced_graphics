@@ -16,7 +16,6 @@ public:
             Origin(Origin), Normal(Normal)
     { }
 
-    Point getIntersectionPoint(const Ray &) const;
     Hit intersect(const Ray &ray) override;
 
 private:

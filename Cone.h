@@ -37,7 +37,7 @@ private:
     const double theta;
     const double cosSquaredTheta;
     const Vector v;
-    const Plane DiskPlan;
+    Plane DiskPlan; // Can't be const because Object::intersect isn't const
 };
 
 
