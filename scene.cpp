@@ -48,46 +48,22 @@ Color Scene::trace(const Ray &ray)
     Hit current_hit = (*hit_iterator)->intersect(ray);
     if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
 
-    std::unique_ptr<Object>& obj = *hit_iterator;
+    std::unique_ptr<Object>& object = *hit_iterator;
 
-    Material& material = obj->material;            //the hit objects material
-    Point hit = ray.at(current_hit.Distance);                 //the hit point
-    Vector N = current_hit.Normal;                          //the normal at hit point
-    Vector V = -ray.Direction;                             //the view vector
-
-
-    /****************************************************
-    * This is where you should insert the color
-    * calculation (Phong model).
-    *
-    * Given: material, hit, N, V, lights[]
-    * Sought: color
-    *
-    * Hints: (see triple.h)
-    *        Triple.dot(Vector) dot product
-    *        Vector+Vector      vector sum
-    *        Vector-Vector      vector difference
-    *        Point-Point        yields vector
-    *        Vector.normalize() normalizes vector, returns length
-    *        double*Color        scales each color component (r,g,b)
-    *        Color*Color        dito
-    *        pow(a,b)           a to the power of b
-    ****************************************************/
-
-    Color output = material.color * material.ka;
+    Color output = object->material.color * object->material.ka;
 
     for (std::unique_ptr<Light> & light_source : lights) {
-        Vector Dposition = current_hit.Position + current_hit.Normal * 0.1;
-        Ray newRay = Ray(Dposition, light_source->Position - Dposition );
+        Vector dPosition = current_hit.Position + current_hit.Normal * 0.1;
+        Ray newRay = Ray(dPosition, light_source->Position - dPosition);
+
         auto hit_iterator_new = optimized_min_element(
                 std::begin(objects), std::end(objects),
                 [&newRay](const std::unique_ptr<Object>& o) { return Hit(o->intersect(newRay)).Distance; }
         );
         Hit current_hit_new = (*hit_iterator_new)->intersect(newRay);
-        //output = (*hit_iterator_new)->material.color;
-        if (current_hit_new.Distance >= (light_source->Position - Dposition).norm()){
-            output += light_source->computeColorAt(current_hit, material);
-            //output = (*hit_iterator_new)->material.color;
+
+        if (current_hit_new.Distance >= (light_source->Position - dPosition).norm()){
+            output += light_source->computeColorAt(current_hit, object->material);
         }
     }
 
@@ -106,30 +82,6 @@ Color Scene::traceZBuf(const Ray &ray)
     if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
 
     std::unique_ptr<Object>& obj = *hit_iterator;
-
-    Material& material = obj->material;            //the hit objects material
-    Point hit = ray.at(current_hit.Distance);                 //the hit point
-    Vector N = current_hit.Normal;                          //the normal at hit point
-    Vector V = -ray.Direction;                             //the view vector
-
-
-    /****************************************************
-    * This is where you should insert the color
-    * calculation (Phong model).
-    *
-    * Given: material, hit, N, V, lights[]
-    * Sought: color
-    *
-    * Hints: (see triple.h)
-    *        Triple.dot(Vector) dot product
-    *        Vector+Vector      vector sum
-    *        Vector-Vector      vector difference
-    *        Point-Point        yields vector
-    *        Vector.normalize() normalizes vector, returns length
-    *        double*Color        scales each color component (r,g,b)
-    *        Color*Color        dito
-    *        pow(a,b)           a to the power of b
-    ****************************************************/
 
     Color output{};
 
@@ -155,71 +107,37 @@ Color Scene::traceNormals(const Ray &ray)
 
     std::unique_ptr<Object>& obj = *hit_iterator;
 
-    Material& material = obj->material;            //the hit objects material
-    Point hit = ray.at(current_hit.Distance);                 //the hit point
-    Vector N = current_hit.Normal;                          //the normal at hit point
-    Vector V = -ray.Direction;                             //the view vector
-
-
-    /****************************************************
-    * This is where you should insert the color
-    * calculation (Phong model).
-    *
-    * Given: material, hit, N, V, lights[]
-    * Sought: color
-    *
-    * Hints: (see triple.h)
-    *        Triple.dot(Vector) dot product
-    *        Vector+Vector      vector sum
-    *        Vector-Vector      vector difference
-    *        Point-Point        yields vector
-    *        Vector.normalize() normalizes vector, returns length
-    *        double*Color        scales each color component (r,g,b)
-    *        Color*Color        dito
-    *        pow(a,b)           a to the power of b
-    ****************************************************/
-
     Color output{};
 
-    output.set((current_hit.Normal.X() + 1 )/ 2,(current_hit.Normal.Y() + 1 )/ 2,(current_hit.Normal.Z() + 1 )/ 2);
+    output = Color{(current_hit + Vector{1, 1, 1}) / 2};
 
     return output;
 }
 
 void Scene::render(Image &img)
 {
-    if (mode == Mode::PHONG) {
-        int w = img.width();
-        int h = img.height();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
-                Ray ray(eye, (pixel - eye).normalized());
-                Color col = trace(ray);
-                img(x, y) = col;
-            }
-        }
-    } else if (mode == Mode::ZBUFFER){
-        int w = img.width();
-        int h = img.height();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Point pixel(x+0.5, h-1-y+0.5, 0);
-                Ray ray(eye, (pixel-eye).normalized());
-                Color col = traceZBuf(ray);
-                img(x,y) = col;
-            }
-        }
-    } else {
-        int w = img.width();
-        int h = img.height();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Point pixel(x+0.5, h-1-y+0.5, 0);
-                Ray ray(eye, (pixel-eye).normalized());
-                Color col = traceNormals(ray);
-                img(x,y) = col;
-            }
+    Color (Scene::*traceFunction)(const Ray&) = nullptr;
+
+    switch (mode) {
+        case Mode::PHONG:
+            traceFunction = &Scene::trace;
+            break;
+        case ZBUFFER:
+            traceFunction = &Scene::traceZBuf;
+            break;
+        case NORMAL:
+            traceFunction = &Scene::traceNormals;
+            break;
+    }
+
+    int w = img.width();
+    int h = img.height();
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
+            Ray ray(eye, (pixel - eye).normalized());
+            Color col = (this->*traceFunction)(ray);
+            img(x, y) = col;
         }
     }
 }

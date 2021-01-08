@@ -281,6 +281,10 @@ template <typename Triple, typename Number, class = typename std::enable_if<is_t
 Triple operator*(const Triple& t1, Number n) { Triple output(t1); for (int i = 0; i < 3; ++i) output[i] *= n; return output; }
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
 inline Triple operator*(Number n, const Triple& t1) { return t1 * n; }
+template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
+Triple& operator*=(Triple& t1, const Triple& t2) { for (int i = 0; i < 3; ++i) t1[i] *= t2[i]; return t1; }
+template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
+Triple operator*(const Triple& t1, const Triple& t2) { Triple output{t1}; output *= t2; return output; }
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
 Triple operator/(Triple t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] /= n; return t1; }
 
