@@ -92,7 +92,7 @@ public:
         if (diffuseFactor <= 0){
             diffuseColor.set(0,0,0);
         }else {
-            diffuseColor = material.color * material.kd * diffuseFactor;
+            diffuseColor = color * material.color * material.kd * diffuseFactor;
         }
 
         double specularFactor = ray_reflection.dot(lightIncidence);
