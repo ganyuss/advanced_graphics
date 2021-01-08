@@ -63,6 +63,9 @@ Hit Cone::getHitOnSlope(const Ray& ray) {
     else if (delta == 0) {
         double t = -b / (2*a);
 
+        if (t < 0)
+            return Hit::NO_HIT();
+
         return Hit(
                 t * ray.Direction.norm(),
                 ray.at(t),
@@ -77,10 +80,10 @@ Hit Cone::getHitOnSlope(const Ray& ray) {
         Point p2 = ray.Origin + t2 * ray.Direction;
 
 
-        bool t1IsFromShadowCone = isInShadowCone(p1);
-        bool t2IsFromShadowCone = isInShadowCone(p2);
+        bool t1IsInvalid = isInShadowCone(p1) || t1 <= 0;
+        bool t2IsInvalid = isInShadowCone(p2) || t2 <= 0;
 
-        if (t1IsFromShadowCone && t2IsFromShadowCone)
+        if (t1IsInvalid && t2IsInvalid)
             return Hit::NO_HIT();
 
         Hit hit1{
@@ -98,9 +101,10 @@ Hit Cone::getHitOnSlope(const Ray& ray) {
         };
 
 
-        if (t1IsFromShadowCone)
+
+        if (t1IsInvalid)
             return hit2;
-        else if (t2IsFromShadowCone)
+        else if (t2IsInvalid)
             return hit1;
         else
             return (hit1.Distance < hit2.Distance) ? hit1 : hit2;
