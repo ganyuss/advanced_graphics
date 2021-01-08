@@ -35,6 +35,7 @@ private:
     std::vector<std::unique_ptr<Light>> lights;
     Point eye;
     Mode mode;
+    int near, far;
 
 public:
     Color trace(const Ray &ray);
@@ -44,6 +45,8 @@ public:
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);
     void setMode(Mode mode);
+    void setNear(int near);
+    void setFar(int far);
     void setEye(Point e);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }

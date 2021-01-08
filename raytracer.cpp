@@ -126,7 +126,12 @@ bool Raytracer::readScene(const std::string& inputFilename)
             doc["RenderMode"] >> mode;
             scene.setMode(mode);
 
-            // Read scene configuration options
+            int distmin, distmax;
+            doc["DistMin"] >> distmin;
+            doc["DistMax"] >> distmax;
+            scene.setNear(distmin);
+            scene.setFar(distmax);
+
             Vector eye{};
             doc["Eye"] >> eye;
             scene.setEye(eye);

@@ -39,7 +39,6 @@ Iterator optimized_min_element(const Iterator& begin, const Iterator& end, Opera
 
 Color Scene::trace(const Ray &ray)
 {
-
     auto hit_iterator = optimized_min_element(
             std::begin(objects), std::end(objects),
             [&ray](const std::unique_ptr<Object>& o) { return Hit(o->intersect(ray)).Distance; }
@@ -86,9 +85,6 @@ Color Scene::trace(const Ray &ray)
 
 Color Scene::traceZBuf(const Ray &ray)
 {
-    auto const distMin = 0;
-    auto const distMax = 10000;
-
     auto hit_iterator = optimized_min_element(
             std::begin(objects), std::end(objects),
             [&ray](const std::unique_ptr<Object>& o) { return Hit(o->intersect(ray)).Distance; }
@@ -126,8 +122,8 @@ Color Scene::traceZBuf(const Ray &ray)
 
     Color output{};
 
-    if (current_hit.Distance < distMax && current_hit.Distance > distMin) {
-        auto normalizedDistance = 1.0 - (current_hit.Distance - distMin) / (distMax - distMin);
+    if (current_hit.Distance < far && current_hit.Distance > near) {
+        auto normalizedDistance = 1.0 - (current_hit.Distance - near) / (far - near);
         output.set(normalizedDistance,normalizedDistance,normalizedDistance);
     } else {
         output.set(0,0,0);
@@ -137,9 +133,6 @@ Color Scene::traceZBuf(const Ray &ray)
 }
 Color Scene::traceNormals(const Ray &ray)
 {
-    auto const distMin = 0;
-    auto const distMax = 10000;
-
     auto hit_iterator = optimized_min_element(
             std::begin(objects), std::end(objects),
             [&ray](const std::unique_ptr<Object>& o) { return Hit(o->intersect(ray)).Distance; }
@@ -240,3 +233,9 @@ void Scene::setMode(Mode m)
     mode = m;
 }
 
+void Scene::setNear(int n){
+    near = n;
+}
+void Scene::setFar(int f){
+    far = f;
+}

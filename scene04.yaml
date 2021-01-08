@@ -4,6 +4,9 @@
 RenderMode : PHONG
 Eye: [200,200,1000]
 
+DistMin : -200
+DistMax : 1000
+
 Lights:
   - position: [-1000,600,500]
     color: [1.0,1.0,1.0]

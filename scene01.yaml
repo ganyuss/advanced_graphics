@@ -15,6 +15,9 @@
 RenderMode : NORMAL
 Eye: [200,200,1000]
 
+DistMin : 0
+DistMax : 1000
+
 Lights:
 - position: [-200,600,1500]
   color: [1.0,1.0,1.0]
