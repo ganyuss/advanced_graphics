@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <stdexcept>
 #include "scene.h"
 #include "material.h"
 
@@ -128,6 +129,10 @@ void Scene::render(Image &img)
         case NORMAL:
             traceFunction = &Scene::traceNormals;
             break;
+    }
+
+    if (! traceFunction) {
+        throw std::invalid_argument("Invalid rendering mode : " + std::to_string(mode));
     }
 
     int w = img.width();
