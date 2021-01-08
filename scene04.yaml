@@ -1,0 +1,360 @@
+---
+#  scene03
+
+RenderMode : PHONG
+Eye: [200,200,1000]
+
+Lights:
+  - position: [-1000,600,500]
+    color: [1.0,1.0,1.0]
+  - position: [2000,1500,-200]
+    color: [ 1.0,1.0,1.0 ]
+  - position: [ -100,-100,400 ]
+    color: [ 1.0,1.0,1.0 ]
+
+Objects:
+  - type: sphere
+    position: [200,200,0]
+    radius: 100
+    material:
+      color: [ 0.5,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.2
+      n: 64
+#bas
+  - type: cone
+    position: [200,100,0]
+    radius: 7
+    up: [0,-30,0]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 200,70,0 ]
+    radius: 7
+    up: [ 0,30,0 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  #droite
+  - type: cone
+    position: [300,200,0]
+    radius: 7
+    up: [30,0,0]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 330,200,0 ]
+    radius: 7
+    up: [ -30,0,0 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  #gauche
+  - type: cone
+    position: [100,200,0]
+    radius: 7
+    up: [-30,0,0]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 70,200,0 ]
+    radius: 7
+    up: [ 30,0,0 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#haut
+  - type: cone
+    position: [200,300,0]
+    radius: 7
+    up: [0,30,0]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 200,330,0 ]
+    radius: 7
+    up: [ 0,-30,0 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#haut gauche
+  - type: cone
+    position: [150,260,70]
+    radius: 7
+    up: [-20,20,20]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [130,280,90]
+    radius: 7
+    up: [20,-20,-20]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#bas droit
+  - type: cone
+    position: [250,140,70]
+    radius: 7
+    up: [20,-20,20]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [270,120,90]
+    radius: 7
+    up: [-20,20,-20]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#haut droit
+  - type: cone
+    position: [250,260,70]
+    radius: 7
+    up: [20,20,20]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [270,280,90]
+    radius: 7
+    up: [-20,-20,-20]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#bas gauche
+  - type: cone
+    position: [150,140,70]
+    radius: 7
+    up: [-20,-20,20]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [130,120,90]
+    radius: 7
+    up: [20,20,-20]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#milieu haut
+  - type: cone
+    position: [200,240,90]
+    radius: 7
+    up: [0,15,50]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 200,255,140 ]
+    radius: 7
+    up: [ 0,-15,-50 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#milieu bas
+  - type: cone
+    position: [200,160,90]
+    radius: 7
+    up: [0,-15,50]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 200,145,140 ]
+    radius: 7
+    up: [ 0,15,-50 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#milieu droit
+  - type: cone
+    position: [240,200,90]
+    radius: 7
+    up: [15,0,50]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 255,200,140 ]
+    radius: 7
+    up: [ -15,0,-50 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#milieu gauche
+  - type: cone
+    position: [160,200,90]
+    radius: 7
+    up: [-15,0,50]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 145,200,140 ]
+    radius: 7
+    up: [ 15,0,-50 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  #droite haut derriere
+  - type: cone
+    position: [280,240,-30]
+    radius: 7
+    up: [30,10,-30]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 310,250,-60 ]
+    radius: 7
+    up: [ -30,-10,30 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  #gauche bas derriere
+  - type: cone
+    position: [120,160,-30]
+    radius: 7
+    up: [-30,-20,-30]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 90,140,-60 ]
+    radius: 7
+    up: [ 30,20,30 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  #bas droit derriere
+  - type: cone
+    position: [230,120,-30]
+    radius: 7
+    up: [10,-30,-30]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 240,90,-60 ]
+    radius: 7
+    up: [ -10, 30, 30 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+#haut gauche derriere
+  - type: cone
+    position: [170,280,-30]
+    radius: 7
+    up: [-15,30,-30]
+    material:
+      color: [ 0.7,0.5,0.5 ]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
+  - type: cone
+    position: [ 155,310,-60 ]
+    radius: 7
+    up: [ 15, -30, 30 ]
+    material:
+      color: [1.0,0.2,0.2]
+      ka: 0.0
+      kd: 0.7
+      ks: 0.0
+      n: 64
