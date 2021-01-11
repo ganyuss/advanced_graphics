@@ -158,8 +158,10 @@ public:
 
     Color(component red, component green, component blue);
 
-    template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>>
-    explicit Color(const Triple&);
+    template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
+    explicit Color(const Triple& t)
+            : Color(t[0], t[1], t[2])
+    { }
 
     component& Red() { return r; }
     component& Green() { return g; }
@@ -209,8 +211,10 @@ public:
 
     Vector(double x, double y, double z);
 
-    template <typename Triple, typename = std::enable_if<is_triple_v<Triple>, bool>>
-    explicit Vector(const Triple&);
+    template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
+    explicit Vector(const Triple& t)
+            : Vector(t[0], t[1], t[2])
+    { }
 
     double& X() { return x; }
     double& Y() { return y; }
@@ -278,7 +282,9 @@ template <typename Triple, typename Number, class = typename std::enable_if<is_t
 inline Triple operator-(const Triple& t1, Number n) { return t1 + (-n); }
 
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
-Triple operator*(const Triple& t1, Number n) { Triple output(t1); for (int i = 0; i < 3; ++i) output[i] *= n; return output; }
+Triple& operator*=(Triple& t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] *= n; return t1; }
+template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
+Triple operator*(const Triple& t1, Number n) { Triple output(t1); output *= n; return output; }
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
 inline Triple operator*(Number n, const Triple& t1) { return t1 * n; }
 template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>

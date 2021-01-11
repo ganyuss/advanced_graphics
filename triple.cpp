@@ -19,11 +19,6 @@ Color::Color(Color::component red, Color::component green, Color::component blue
     : r(red), g(green), b(blue)
 { }
 
-template<typename Triple, typename>
-Color::Color(const Triple &t)
-    : Color(t[0], t[1], t[2])
-{ }
-
 void Color::set(Color::component red, Color::component green, Color::component blue) {
     r = red;
     g = green;
@@ -32,11 +27,6 @@ void Color::set(Color::component red, Color::component green, Color::component b
 
 Vector::Vector(double x, double y, double z)
     : x(x), y(y), z(z)
-{ }
-
-template<typename Triple, typename>
-Vector::Vector(const Triple &t)
-    : Vector(t[0], t[1], t[2])
 { }
 
 double Vector::dot(const Vector &other) const {
