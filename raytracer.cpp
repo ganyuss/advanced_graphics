@@ -100,7 +100,10 @@ std::unique_ptr<Light> Raytracer::parseLight(const YAML::Node& node)
     node["position"] >> position;
     Color color;
     node["color"] >> color;
-    return std::make_unique<Light>(position, color);
+    float size = 0;
+    node["size"] >> size;
+
+    return std::make_unique<Light>(position, color, size);
 }
 
 /*
@@ -131,6 +134,10 @@ bool Raytracer::readScene(const std::string& inputFilename)
             doc["DistMax"] >> distmax;
             scene.setNear(distmin);
             scene.setFar(distmax);
+
+            bool renderSoftShadows = true;
+            doc["SoftShadows"] >> renderSoftShadows;
+            scene.SoftShadows = renderSoftShadows;
 
             Vector eye{};
             doc["Eye"] >> eye;

@@ -85,7 +85,7 @@ bool inline operator!=(const Hit& h1, const Hit& h2) {
 class Light
 {
 public:
-    Light(Point Position, Color c) : Position(Position), color(c)
+    Light(Point Position, Color c, float size) : Position(Position), color(c), Size(size)
     { }
 
     virtual Color computeColorAt(const Hit& hit_point, const Material& material) const {
@@ -115,6 +115,7 @@ public:
 
     Point Position;
     Color color;
+    float Size;
 };
 
 #endif /* end of include guard: LIGHT_H_PG2BAJRA */

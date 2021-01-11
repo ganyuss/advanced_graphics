@@ -6,6 +6,7 @@ Eye: [200,200,1000]
 
 DistMin : -200
 DistMax : 1000
+SoftShadows: Off
 
 Lights:
   - position: [-1000,600,500]

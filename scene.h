@@ -38,6 +38,9 @@ private:
     int near, far;
 
 public:
+
+    bool SoftShadows = false;
+
     Color trace(const Ray &ray);
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);
@@ -50,6 +53,11 @@ public:
     void setEye(Point e);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }
+
+private:
+    std::unique_ptr<Object>& getObjectHitBy(const Ray&);
+    float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit);
+    float getLightFactorFor(const std::unique_ptr<Light> &light, const Vector &deltaLightPosition, const Vector& hitPoint);
 };
 
 #endif /* end of include guard: SCENE_H_KNBLQLP6 */

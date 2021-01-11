@@ -18,6 +18,7 @@
 #include <functional>
 #include <stdexcept>
 #include "scene.h"
+#include "commongeometry.h"
 
 void operator>>(const YAML::Node &node, Mode &mode){
     auto s = node.Read<std::string>();
@@ -39,31 +40,21 @@ Iterator optimized_min_element(const Iterator& begin, const Iterator& end, Opera
 
 Color Scene::trace(const Ray &ray)
 {
-    auto hit_iterator = optimized_min_element(
-            std::begin(objects), std::end(objects),
-            [&ray](const std::unique_ptr<Object>& o) { return Hit(o->intersect(ray)).Distance; }
-    );
+    std::unique_ptr<Object>& object = getObjectHitBy(ray);
 
     // No hit? Return background color.
-    Hit current_hit = (*hit_iterator)->intersect(ray);
+    Hit current_hit = object->intersect(ray);
     if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
 
-    std::unique_ptr<Object>& object = *hit_iterator;
 
     Color output = object->material.color * object->material.ka;
 
     for (std::unique_ptr<Light> & light_source : lights) {
-        Vector dPosition = current_hit.Position + current_hit.Normal * 0.1;
-        Ray newRay = Ray(dPosition, light_source->Position - dPosition);
 
-        auto hit_iterator_new = optimized_min_element(
-                std::begin(objects), std::end(objects),
-                [&newRay](const std::unique_ptr<Object>& o) { return Hit(o->intersect(newRay)).Distance; }
-        );
-        Hit current_hit_new = (*hit_iterator_new)->intersect(newRay);
+        float lightFactor = getLightFactorFor(light_source, current_hit);
 
-        if (current_hit_new.Distance >= (light_source->Position - dPosition).norm()){
-            output += light_source->computeColorAt(current_hit, object->material);
+        if (lightFactor > 0) {
+            output += lightFactor * light_source->computeColorAt(current_hit, object->material);
         }
     }
 
@@ -109,7 +100,7 @@ Color Scene::traceNormals(const Ray &ray)
 
     Color output{};
 
-    output = Color{(current_hit + Vector{1, 1, 1}) / 2};
+    output = Color{(current_hit.Normal + Vector{1, 1, 1}) / 2};
 
     return output;
 }
@@ -171,4 +162,86 @@ void Scene::setNear(int n){
 }
 void Scene::setFar(int f){
     far = f;
+}
+
+std::unique_ptr<Object>& Scene::getObjectHitBy(const Ray& ray) {
+    auto hit_iterator = optimized_min_element(
+            std::begin(objects), std::end(objects),
+            [&ray](const std::unique_ptr<Object>& o) { return o->intersect(ray).Distance; }
+    );
+
+    return *hit_iterator;
+}
+
+float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& hit) {
+
+    const int lightSampleNumber = 8;
+
+    Vector dPosition = hit.Position + hit.Normal * 0.1;
+    Ray newRay = Ray(dPosition, light->Position - dPosition);
+
+    std::unique_ptr<Object>& newObject = getObjectHitBy(newRay);
+    Hit current_hit_new = newObject->intersect(newRay);
+
+    if ((! SoftShadows) || light->Size == 0) {
+        return current_hit_new.Distance >= (light->Position - dPosition).norm() ? 1 : 0;
+    }
+
+    // We try to get any vector that is not collinear with newRay.Direction
+    Vector lightPositionDeltaDirection = Vector{1, 0, 0} - project(Vector{1, 0, 0}, newRay.Direction);
+
+    if (lightPositionDeltaDirection == Vector{0, 0, 0})
+        lightPositionDeltaDirection = Vector{0, 1, 0};
+    else
+        lightPositionDeltaDirection.normalize();
+    Vector lightPositionDelta = lightPositionDeltaDirection * light->Size;
+
+    float softShadowFactor = 0;
+
+    for (std::size_t i = 0; i < lightSampleNumber; ++i) {
+        Vector dLightPosition = rotateAround(lightPositionDelta, newRay.Direction, (360.f * i) / lightSampleNumber);
+
+        float newSoftShadowFactor = getLightFactorFor(light, dLightPosition, dPosition);
+
+        softShadowFactor += newSoftShadowFactor;
+    }
+
+    return softShadowFactor / static_cast<float>(lightSampleNumber);
+}
+
+float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Vector& deltaLightPosition, const Vector& hitPoint) {
+
+    const int amountOfSamples = 8;
+
+    // Can't use reference here
+    std::vector<std::unique_ptr<Object>*> objectsHit;
+
+    auto isFactorShadowed = [&light, &deltaLightPosition, &hitPoint] (float factor, std::unique_ptr<Object>& object) {
+        Vector lightPos = light->Position + (deltaLightPosition * factor);
+        Ray newRay{hitPoint, lightPos - hitPoint};
+        Hit newHit = object->intersect(newRay);
+        return newHit.Distance < (newRay.Origin - lightPos).norm();
+    };
+
+    for (std::unique_ptr<Object>& object : objects) {
+        if (isFactorShadowed(0, object) || isFactorShadowed(1, object)) {
+            objectsHit.push_back(&object);
+        }
+    }
+
+    float shadowFactor = 0;
+
+    for (std::unique_ptr<Object>* object : objectsHit) {
+
+        int ShadowedSamples = 0;
+
+        for (std::size_t i = 0; i < amountOfSamples; ++i) {
+            if (isFactorShadowed(i / static_cast<float>(amountOfSamples), *object))
+                ShadowedSamples++;
+        }
+
+        shadowFactor += ShadowedSamples / static_cast<float>(amountOfSamples);
+    }
+
+    return 1 - shadowFactor;
 }

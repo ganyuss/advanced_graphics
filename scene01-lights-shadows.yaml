@@ -17,12 +17,15 @@ Eye: [200,200,1000]
 
 DistMin : 0
 DistMax : 10000
+SoftShadows : On
 
 Lights:
 - position: [-200,600,1500]
   color: [0.4,0.4,0.8]
+  size: 30
 - position: [600,600,1500]
   color: [0.8,0.8,0.4]
+  size: 60
 
 Objects:
 - type: sphere
