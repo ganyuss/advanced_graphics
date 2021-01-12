@@ -112,22 +112,31 @@ Color Scene::traceNormals(const Ray &ray)
 
 void Scene::render(Image &img)
 {
+    Color (*traceFunction)(Scene*, const Ray&) = nullptr;
+
+    switch (mode) {
+        case Mode::PHONG:
+            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, 1); };
+            break;
+        case Mode::ZBUFFER:
+            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->traceZBuf(ray); };
+            break;
+        case Mode::NORMAL:
+            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->traceNormals(ray); };
+            break;
+    }
+
+    if (! traceFunction) {
+        throw std::invalid_argument("Invalid rendering mode : " + std::to_string(mode));
+    }
+
     int w = img.width();
     int h = img.height();
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
             Ray ray(eye, (pixel - eye).normalized());
-            Color col;
-            switch (mode) {
-                case PHONG:
-                    col = trace(ray, 3);
-                case ZBUFFER:
-                    col =traceZBuf(ray);
-                default:
-                    col = trace(ray, 3);
-                    //col = traceNormals(ray);
-            }
+            Color col = traceFunction(this, ray);
 
             img(x, y) = col;
         }

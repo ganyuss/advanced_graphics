@@ -155,11 +155,6 @@ public:
     Color(Color&&) = default;
     Color& operator=(const Color&) = default;
     Color& operator=(Color&&) = default;
-/*
-    Color& operator+= (const Color &other) {
-        set(Red() + other.r, Green() + other.g,Blue() + other.b);
-        return *this;
-    }*/
 
     Color(component red, component green, component blue);
 

@@ -22,7 +22,7 @@
 #include <limits>
 #include "triple.h"
 #include "material.h"
-
+#include "commongeometry.h"
 
 
 class Ray
@@ -71,6 +71,9 @@ public:
 };
 
 bool inline operator==(const Hit& h1, const Hit& h2) {
+    if (h1.Distance == std::numeric_limits<double>::infinity()
+            || h2.Distance  == std::numeric_limits<double>::infinity())
+        return h1.Distance == h2.Distance;
     return h1.Distance == h2.Distance
            && h1.Position == h2.Position
            && h1.Normal == h2.Normal
@@ -89,9 +92,7 @@ public:
     { }
 
     virtual Color computeColorAt(const Hit& hit_point, const Material& material) const {
-        Vector ray_reflection = hit_point.Source.Direction
-                - 2 * hit_point.Source.Direction.dot(hit_point.Normal.normalized())
-                        * hit_point.Normal;
+        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
         ray_reflection.normalize();
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();

@@ -6,7 +6,6 @@
 #define RAYTRACER_COMMONGEOMETRY_H
 
 #include "triple.h"
-#include "light.h"
 
 inline Vector project(const Vector& vectorToProject, const Vector& reference) {
     return (vectorToProject.dot(reference) / reference.dot(reference)) * reference;
