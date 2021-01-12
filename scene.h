@@ -24,6 +24,7 @@
 #include "object.h"
 #include "image.h"
 #include "yaml/yaml.h"
+#include "commongeometry.h"
 
 enum Mode {PHONG, ZBUFFER, NORMAL};
 void operator>>(const YAML::Node &node, Mode &mode);
@@ -41,7 +42,7 @@ public:
 
     bool SoftShadows = false;
 
-    Color trace(const Ray &ray);
+    Color trace(const Ray &ray, int iterations);
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);
     void render(Image &img);

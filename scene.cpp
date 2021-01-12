@@ -38,14 +38,13 @@ Iterator optimized_min_element(const Iterator& begin, const Iterator& end, Opera
 }
 
 
-Color Scene::trace(const Ray &ray)
+Color Scene::trace(const Ray &ray, int iterations)
 {
     std::unique_ptr<Object>& object = getObjectHitBy(ray);
 
     // No hit? Return background color.
     Hit current_hit = object->intersect(ray);
     if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
-
 
     Color output = object->material.color * object->material.ka;
 
@@ -56,6 +55,12 @@ Color Scene::trace(const Ray &ray)
         if (lightFactor > 0) {
             output += lightFactor * light_source->computeColorAt(current_hit, object->material);
         }
+    }
+
+    if (iterations != 0 && object->material.reflection){
+        Vector dir = -rotateAround(ray.Direction, current_hit.Normal, 180);
+        Ray reflected {current_hit.Position + dir * 0.1, dir};
+        output += trace(reflected, iterations - 1) * object->material.ks;
     }
 
     return output;
@@ -107,31 +112,23 @@ Color Scene::traceNormals(const Ray &ray)
 
 void Scene::render(Image &img)
 {
-    Color (Scene::*traceFunction)(const Ray&) = nullptr;
-
-    switch (mode) {
-        case Mode::PHONG:
-            traceFunction = &Scene::trace;
-            break;
-        case ZBUFFER:
-            traceFunction = &Scene::traceZBuf;
-            break;
-        case NORMAL:
-            traceFunction = &Scene::traceNormals;
-            break;
-    }
-
-    if (! traceFunction) {
-        throw std::invalid_argument("Invalid rendering mode : " + std::to_string(mode));
-    }
-
     int w = img.width();
     int h = img.height();
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
             Ray ray(eye, (pixel - eye).normalized());
-            Color col = (this->*traceFunction)(ray);
+            Color col;
+            switch (mode) {
+                case PHONG:
+                    col = trace(ray, 3);
+                case ZBUFFER:
+                    col =traceZBuf(ray);
+                default:
+                    col = trace(ray, 3);
+                    //col = traceNormals(ray);
+            }
+
             img(x, y) = col;
         }
     }

@@ -20,13 +20,14 @@
 
 struct Material
 {
-    Color color;        // base color
+    Color  color;        // base color
     double ka;          // ambient intensity
     double kd;          // diffuse intensity
     double ks;          // specular intensity 
     double n;           // exponent for specular highlight size
+    bool   reflection;
 
-    Material() : color{}, ka{}, kd{}, ks{}, n{}
+    Material() : color{}, ka{}, kd{}, ks{}, n{}, reflection{}
     { }
 };
 
