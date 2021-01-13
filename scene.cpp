@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include "scene.h"
 #include "commongeometry.h"
+#include <cmath>
 
 void operator>>(const YAML::Node &node, Mode &mode){
     auto s = node.Read<std::string>();
@@ -46,21 +47,54 @@ Color Scene::trace(const Ray &ray, int iterations)
     Hit current_hit = object->intersect(ray);
     if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
 
-    Color output = object->material.color * object->material.ka;
+    Color output{};
 
-    for (std::unique_ptr<Light> & light_source : lights) {
+    if (object->material.type == MaterialType::REFRACTION && iterations > 0) {
+        for (std::unique_ptr<Light> &light_source : lights) {
 
-        float lightFactor = getLightFactorFor(light_source, current_hit);
+            float lightFactor = getLightFactorFor(light_source, current_hit);
 
-        if (lightFactor > 0) {
-            output += lightFactor * light_source->computeColorAt(current_hit, object->material);
+            if (lightFactor > 0) {
+                output += lightFactor * light_source->computeSpecularColorAt(current_hit, object->material);
+            }
         }
-    }
 
-    if (iterations != 0 && object->material.reflection){
-        Vector dir = -rotateAround(ray.Direction, current_hit.Normal, 180);
-        Ray reflected {current_hit.Position + dir * 0.1, dir};
-        output += trace(reflected, iterations - 1) * object->material.ks;
+        double oldAngle = angleBetween(ray.Direction, current_hit.Normal);
+
+        double indexRatio;
+        if (ray.Direction.dot(current_hit.Normal) > 0) indexRatio = object->material.index;
+        else indexRatio = 1 / object->material.index;
+
+        double newAngle = std::asin(indexRatio * std::sin(oldAngle * M_PI / 180)) * 180 / M_PI;
+
+        Vector refractedDirection = rotateAround(
+                sign(ray.Direction.dot(current_hit.Normal)) * current_hit.Normal,
+                getThirdOrthogonalVector(ray.Direction, current_hit.Normal),
+                newAngle
+        );
+
+        output += trace(Ray{current_hit.Position + refractedDirection * 0.1, refractedDirection }, iterations-1);
+    }
+    else {
+        output = object->material.color * object->material.ka;
+
+        for (std::unique_ptr<Light> &light_source : lights) {
+
+            float lightFactor = getLightFactorFor(light_source, current_hit);
+
+            if (lightFactor > 0) {
+                output += lightFactor * (
+                        light_source->computeDiffuseColorAt(current_hit, object->material)
+                        + light_source->computeSpecularColorAt(current_hit, object->material)
+                );
+            }
+        }
+
+        if (iterations != 0 && object->material.type == MaterialType::REFLECTION) {
+            Vector dir = -rotateAround(ray.Direction, current_hit.Normal, 180);
+            Ray reflected{current_hit.Position + dir * 0.1, dir};
+            output += trace(reflected, iterations - 1) * object->material.ks;
+        }
     }
 
     return output;
@@ -116,7 +150,7 @@ void Scene::render(Image &img)
 
     switch (mode) {
         case Mode::PHONG:
-            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, 1); };
+            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, 3); };
             break;
         case Mode::ZBUFFER:
             traceFunction = [] (Scene* scene, const Ray& ray) { return scene->traceZBuf(ray); };

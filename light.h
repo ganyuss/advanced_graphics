@@ -91,9 +91,24 @@ public:
     Light(Point Position, Color c, float size) : Position(Position), color(c), Size(size)
     { }
 
-    virtual Color computeColorAt(const Hit& hit_point, const Material& material) const {
+    virtual Color computeSpecularColorAt(const Hit& hit_point, const Material& material) const {
         Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
         ray_reflection.normalize();
+        Vector lightIncidence = Position - hit_point.Position;
+        lightIncidence.normalize();
+
+        double specularFactor = ray_reflection.dot(lightIncidence);
+        if (specularFactor < 0){
+            specularFactor = 0;
+        }
+        Color specularColor = color * material.ks * pow(specularFactor,material.n);
+
+        return specularColor;
+
+    }
+
+    virtual Color computeDiffuseColorAt(const Hit& hit_point, const Material& material) const {
+
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();
         double diffuseFactor = hit_point.Normal.dot(lightIncidence);
@@ -104,13 +119,7 @@ public:
             diffuseColor = color * material.color * material.kd * diffuseFactor;
         }
 
-        double specularFactor = ray_reflection.dot(lightIncidence);
-        if (specularFactor < 0){
-            specularFactor = 0;
-        }
-        Color specularColor = color * material.ks * pow(specularFactor,material.n);
-
-        return diffuseColor + specularColor;
+        return diffuseColor;
 
     }
 

@@ -5,7 +5,7 @@
 #include "commongeometry.h"
 
 double angleBetween(const Vector &v1, const Vector &v2) {
-    return std::acos(v1.normalized().dot(v2.normalized()));
+    return std::acos(v1.normalized().dot(v2.normalized())) * 180 / M_PI;
 }
 
 
@@ -16,10 +16,10 @@ Vector rotateAround(const Vector &vectorToRotate, const Vector &vectorReference,
     Vector vectorToRotateParallel = project(vectorToRotate, vectorReference);
     Vector vectorToRotateOrthogonal = vectorToRotate - vectorToRotateParallel;
 
-    Vector w = getThirdOrthogonalVector(vectorToRotateOrthogonal, vectorReference);
+    Vector w = getThirdOrthogonalVector(vectorToRotateOrthogonal, vectorReference.normalized());
 
-    double x1 = std::cos(angleDegrees) / vectorToRotateOrthogonal.norm();
-    double x2 = std::sin(angleDegrees) / w.norm();
+    double x1 = std::cos(angleDegrees * M_PI / 180) / vectorToRotateOrthogonal.norm();
+    double x2 = std::sin(angleDegrees * M_PI / 180) / w.norm();
 
     Vector newOrthogonalComponent = vectorToRotateOrthogonal.norm() * (x1*vectorToRotateOrthogonal + x2*w);
 

@@ -13,3 +13,13 @@
 //
 
 #include "material.h"
+
+void operator>>(const YAML::Node &node, MaterialType &type) {
+    auto s = node.Read<std::string>();
+    std::map<std::string, MaterialType> map{
+        {"default", MaterialType::DEFAULT},
+        {"reflection", MaterialType::REFLECTION},
+        {"refraction", MaterialType::REFRACTION}
+    };
+    type = map[s];
+}

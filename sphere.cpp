@@ -51,7 +51,7 @@ Hit Sphere::intersect(const Ray &ray)
     }
 
     // Normal calculation
-    Point intersectionPoint = ray.Origin + ray.Direction * distanceToOrigin;
+    Point intersectionPoint = ray.at(distanceToOrigin);
     Vector normal = (-Position + intersectionPoint).normalized();
 
     return {distanceToOrigin, intersectionPoint, normal, ray};

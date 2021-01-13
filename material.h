@@ -17,6 +17,9 @@
 
 #include <iostream>
 #include "triple.h"
+#include "yaml/node.h"
+
+enum MaterialType { DEFAULT, REFLECTION, REFRACTION };
 
 struct Material
 {
@@ -25,10 +28,14 @@ struct Material
     double kd;          // diffuse intensity
     double ks;          // specular intensity 
     double n;           // exponent for specular highlight size
-    bool   reflection;
+    double index;
+    MaterialType type;
 
-    Material() : color{}, ka{}, kd{}, ks{}, n{}, reflection{}
+    Material() : color{}, ka{}, kd{}, ks{}, n{}, type{}
     { }
 };
+
+void operator>>(const YAML::Node &node, MaterialType &mode);
+
 
 #endif /* end of include guard: MATERIAL_H_TWMNT2EJ */
