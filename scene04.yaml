@@ -6,15 +6,18 @@ Eye: [200,200,1000]
 
 DistMin : -200
 DistMax : 1000
-SoftShadows: Off
+SoftShadows: On
 
 Lights:
   - position: [-1000,600,500]
     color: [1.0,1.0,1.0]
+    size: 80
   - position: [2000,1500,-200]
     color: [ 1.0,1.0,1.0 ]
+    size: 80
   - position: [ -100,-100,400 ]
     color: [ 1.0,1.0,1.0 ]
+    size: 80
 
 Objects:
   - type: sphere
@@ -24,8 +27,10 @@ Objects:
       color: [ 0.5,0.5,0.5 ]
       ka: 0.0
       kd: 0.7
-      ks: 0.2
+      ks: 0.0
       n: 64
+      index: 1
+      type: default
 #bas
   - type: cone
     position: [200,100,0]
@@ -37,6 +42,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 200,70,0 ]
     radius: 7
@@ -47,6 +54,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   #droite
   - type: cone
     position: [300,200,0]
@@ -58,6 +67,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 330,200,0 ]
     radius: 7
@@ -68,6 +79,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   #gauche
   - type: cone
     position: [100,200,0]
@@ -79,6 +92,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 70,200,0 ]
     radius: 7
@@ -89,6 +104,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #haut
   - type: cone
     position: [200,300,0]
@@ -100,6 +117,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 200,330,0 ]
     radius: 7
@@ -110,6 +129,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #haut gauche
   - type: cone
     position: [150,260,70]
@@ -121,6 +142,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [130,280,90]
     radius: 7
@@ -131,6 +154,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #bas droit
   - type: cone
     position: [250,140,70]
@@ -142,6 +167,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [270,120,90]
     radius: 7
@@ -152,6 +179,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #haut droit
   - type: cone
     position: [250,260,70]
@@ -163,6 +192,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [270,280,90]
     radius: 7
@@ -173,6 +204,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #bas gauche
   - type: cone
     position: [150,140,70]
@@ -184,6 +217,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [130,120,90]
     radius: 7
@@ -194,6 +229,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #milieu haut
   - type: cone
     position: [200,240,90]
@@ -205,6 +242,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 200,255,140 ]
     radius: 7
@@ -215,6 +254,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #milieu bas
   - type: cone
     position: [200,160,90]
@@ -226,6 +267,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 200,145,140 ]
     radius: 7
@@ -236,6 +279,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #milieu droit
   - type: cone
     position: [240,200,90]
@@ -247,6 +292,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 255,200,140 ]
     radius: 7
@@ -257,6 +304,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #milieu gauche
   - type: cone
     position: [160,200,90]
@@ -268,6 +317,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 145,200,140 ]
     radius: 7
@@ -278,6 +329,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   #droite haut derriere
   - type: cone
     position: [280,240,-30]
@@ -289,6 +342,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 310,250,-60 ]
     radius: 7
@@ -299,6 +354,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   #gauche bas derriere
   - type: cone
     position: [120,160,-30]
@@ -310,6 +367,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 90,140,-60 ]
     radius: 7
@@ -320,6 +379,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   #bas droit derriere
   - type: cone
     position: [230,120,-30]
@@ -331,6 +392,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 240,90,-60 ]
     radius: 7
@@ -341,6 +404,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
 #haut gauche derriere
   - type: cone
     position: [170,280,-30]
@@ -352,6 +417,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [ 155,310,-60 ]
     radius: 7
@@ -362,3 +429,5 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default

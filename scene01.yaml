@@ -17,7 +17,7 @@ Eye: [200,200,1000]
 
 DistMin : 0
 DistMax : 1000
-SoftShadows : Off
+SoftShadows : On
 
 Lights:
 - position: [-200,600,1500]
@@ -34,6 +34,8 @@ Objects:
     kd: 0.7
     ks: 0.5
     n: 64
+    index: 1
+    type: reflection
 - type: sphere
   position: [210,270,300]
   radius: 50
@@ -43,6 +45,8 @@ Objects:
     kd: 0.3
     ks: 0.5
     n: 8
+    index: 1
+    type: reflection
 - type: sphere
   position: [290,170,150]
   radius: 50
@@ -52,6 +56,8 @@ Objects:
     kd: 0.7
     ks: 0.8
     n: 32
+    index: 1
+    type: reflection
 - type: sphere
   position: [140,220,400]
   radius: 50
@@ -61,6 +67,8 @@ Objects:
     kd: 0.8
     ks: 0.0
     n: 1
+    index: 1.5
+    type: refraction
 - type: sphere
   position: [110,130,200]
   radius: 50
@@ -70,3 +78,5 @@ Objects:
     kd: 0.8
     ks: 0.5
     n: 32
+    index: 1
+    type: reflection

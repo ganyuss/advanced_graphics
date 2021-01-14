@@ -5,7 +5,7 @@ RenderMode : PHONG
 
 DistMin : 0
 DistMax : 10000
-SoftShadows: Off
+SoftShadows: On
 
 Eye: [200,200,1000]
 
@@ -24,6 +24,8 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: sphere
     position: [210,270,-300]
     radius: 50
@@ -33,6 +35,8 @@ Objects:
       kd: 0.3
       ks: 0.5
       n: 8
+      index: 1
+      type: default
   - type: sphere
     position: [290,170,-150]
     radius: 60
@@ -42,6 +46,8 @@ Objects:
       kd: 0.7
       ks: 0.8
       n: 32
+      index: 1
+      type: default
   - type: sphere
     position: [290,230,-150]
     radius: 60
@@ -51,6 +57,8 @@ Objects:
       kd: 0.7
       ks: 0.8
       n: 32
+      index: 1
+      type: default
   - type: sphere
     position: [290,170,-0]
     radius: 20
@@ -60,6 +68,8 @@ Objects:
       kd: 0.7
       ks: 0.8
       n: 32
+      index: 1
+      type: default
   - type: sphere
     position: [140,220,-400]
     radius: 50
@@ -69,6 +79,8 @@ Objects:
       kd: 0.8
       ks: 0.0
       n: 1
+      index: 1
+      type: default
   - type: sphere
     position: [110,130,-200]
     radius: 75
@@ -78,6 +90,8 @@ Objects:
       kd: 0.06
       ks: 0.9
       n: 32
+      index: 1.5
+      type: refraction
   - type: sphere
     position: [180,180,-800]
     radius: 300
@@ -87,3 +101,5 @@ Objects:
       kd: 0.5
       ks: 0.3
       n: 32
+      index: 1
+      type: reflection

@@ -1,20 +1,23 @@
 ---
 #  scene03
 
-RenderMode : ZBUFFER
+RenderMode : PHONG
 Eye: [200,200,1000]
 
 DistMin : -2000
 DistMax : 10000
-SoftShadows: Off
+SoftShadows: On
 
 Lights:
   - position: [-1000,600,500]
     color: [1.0,1.0,1.0]
+    size: 80
   - position: [2000,1500,-200]
     color: [ 1.0,1.0,1.0 ]
+    size: 80
   - position: [ 0,0,0 ]
     color: [ 1.0,1.0,1.0 ]
+    size: 80
 
 Objects:
   - type: cone
@@ -27,15 +30,19 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1.5
+      type: refraction
   - type: sphere
-    position: [90,220,-100]
+    position: [90,220,-200]
     radius: 50
     material:
-      color: [ 0.0,0.0,1.0 ]
+      color: [ 0.5,0.5,1.0 ]
       ka: 0.0
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: cone
     position: [200,90,-100]
     radius: 30
@@ -46,12 +53,16 @@ Objects:
       kd: 0.7
       ks: 0.0
       n: 64
+      index: 1
+      type: default
   - type: plane
-    position: [ 500,50,-100 ]
-    normal: [ 1, 1 ,0 ]
+    position: [ 500,50,-400 ]
+    normal: [ 0, 0, 1 ]
     material:
       color: [ 0.0,0.0,1.0 ]
       ka: 0.0
       kd: 0.7
-      ks: 0.0
+      ks: 0.4
       n: 64
+      index: 1
+      type: reflection
