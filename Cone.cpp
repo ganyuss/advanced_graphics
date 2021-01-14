@@ -10,20 +10,15 @@ Hit Cone::intersect(const Ray &ray) {
 
     Hit slopeHit = getHitOnSlope(ray);
 
-    Point planIntersection = DiskPlan.intersect(ray).Position;
+    Hit planHit = DiskPlan.intersect(ray);
 
-    if ((planIntersection-Position).norm() < Radius) {
+    if ((planHit.Position - Position).norm() < Radius) {
 
-        double hitDistance = (planIntersection - ray.Origin).norm();
+        double hitDistance = (planHit.Position - ray.Origin).norm();
         if (hitDistance > slopeHit.Distance)
             return slopeHit;
 
-        return Hit(
-                hitDistance,
-                planIntersection,
-                -Up.normalized(),
-                ray
-            );
+        return planHit;
     }
 
     return slopeHit;
@@ -32,9 +27,9 @@ Hit Cone::intersect(const Ray &ray) {
 Vector Cone::getNormalAt(const Point &p) {
 
     Point Tip = (Position + Up);
-    Vector reflection = rotateAround(Up, p - Tip, 180);
+    Vector NormalDirection = rotateAround(p - Tip, getThirdOrthogonalVector(Up, p - Tip), 90);
 
-    return - (-Up + reflection).normalized();
+    return (NormalDirection).normalized();
 }
 
 bool Cone::isInShadowCone(const Point &p) {
