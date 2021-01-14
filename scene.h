@@ -59,6 +59,17 @@ private:
     std::unique_ptr<Object>& getObjectHitBy(const Ray&);
     float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit);
     float getLightFactorFor(const std::unique_ptr<Light> &light, const Vector &deltaLightPosition, const Vector& hitPoint);
+
+    typedef unsigned char PhongColor;
+
+    PhongColor phong_ambient = 0x01;
+    PhongColor phong_diffuse = 0x02;
+    PhongColor phong_specular = 0x04;
+    PhongColor phong_all = phong_ambient | phong_diffuse | phong_specular;
+
+    Color computeReflection(const Hit &, const Material &, int iterations);
+    Color computeRefraction(const Hit &current_hit, const Material &, int iterations);
+    Color computePhong(const Hit &, Scene::PhongColor illumination, const Material &);
 };
 
 #endif /* end of include guard: SCENE_H_KNBLQLP6 */

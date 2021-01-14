@@ -50,60 +50,16 @@ Color Scene::trace(const Ray &ray, int iterations)
     Color output{};
 
     if (object->material.type == MaterialType::REFRACTION && iterations > 0) {
-        for (std::unique_ptr<Light> &light_source : lights) {
 
-            float lightFactor = getLightFactorFor(light_source, current_hit);
-
-            if (lightFactor > 0) {
-                output += lightFactor * light_source->computeSpecularColorAt(current_hit, object->material);
-            }
-        }
-
-        // source: https://computergraphics.stackexchange.com/questions/4573/refraction-in-a-ray-tracer-what-do-with-an-intersection-within-the-medium
-
-        double cosIncidence = ray.Direction.dot(current_hit.Normal);
-        double index1 = 1, index2 = object->material.index;
-        Vector normal = current_hit.Normal;
-
-        if (cosIncidence < 0) {
-            cosIncidence = -cosIncidence;
-        }
-        else {
-            std::swap(index1, index2);
-            normal = -current_hit.Normal;
-        }
-
-        double indexRatio = index1 / index2;
-        double k = 1 - indexRatio * indexRatio * (1 - cosIncidence * cosIncidence);
-
-        if (k >= 0) {
-            Vector refractedDirection = indexRatio * ray.Direction + (indexRatio * cosIncidence - std::sqrt(k)) * normal;
-
-            output += trace(Ray{current_hit.Position + refractedDirection * 0.1, refractedDirection}, iterations - 1);
-        }
-        else {
-            output = Color{1.0, 0.0, 0.0};
-        }
+        output += computePhong(current_hit, phong_specular, object->material);
+        output += computeRefraction(current_hit, object->material, iterations);
     }
     else {
-        output = object->material.color * object->material.ka;
 
-        for (std::unique_ptr<Light> &light_source : lights) {
-
-            float lightFactor = getLightFactorFor(light_source, current_hit);
-
-            if (lightFactor > 0) {
-                output += lightFactor * (
-                        light_source->computeDiffuseColorAt(current_hit, object->material)
-                        + light_source->computeSpecularColorAt(current_hit, object->material)
-                );
-            }
-        }
+        output += computePhong(current_hit, phong_all, object->material);
 
         if (iterations != 0 && object->material.type == MaterialType::REFLECTION) {
-            Vector dir = -rotateAround(ray.Direction, current_hit.Normal, 180);
-            Ray reflected{current_hit.Position + dir * 0.1, dir};
-            output += trace(reflected, iterations - 1) * object->material.ks;
+            output += computeReflection(current_hit, object->material, iterations);
         }
     }
 
@@ -294,4 +250,67 @@ float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Vector
     }
 
     return 1 - shadowFactor;
+}
+
+Color Scene::computeReflection(const Hit& current_hit, const Material& material, int iterations) {
+
+    Vector dir = -rotateAround(current_hit.Source.Direction, current_hit.Normal, 180);
+    Ray reflected{current_hit.Position + dir * 0.1, dir};
+    return trace(reflected, iterations - 1) * material.ks;
+}
+
+Color Scene::computeRefraction(const Hit& current_hit, const Material& material, int iterations) {
+
+    Color output{};
+
+    // source: https://computergraphics.stackexchange.com/questions/4573/refraction-in-a-ray-tracer-what-do-with-an-intersection-within-the-medium
+
+    double cosIncidence = current_hit.Source.Direction.dot(current_hit.Normal);
+    double index1 = 1, index2 = material.index;
+    Vector normal = current_hit.Normal;
+
+    if (cosIncidence < 0) {
+        cosIncidence = -cosIncidence;
+    }
+    else {
+        std::swap(index1, index2);
+        normal = -current_hit.Normal;
+    }
+
+    double indexRatio = index1 / index2;
+    double k = 1 - indexRatio * indexRatio * (1 - cosIncidence * cosIncidence);
+
+    if (k >= 0) {
+        Vector refractedDirection = indexRatio * current_hit.Source.Direction + (indexRatio * cosIncidence - std::sqrt(k)) * normal;
+        output += trace(Ray{current_hit.Position + refractedDirection * 0.1, refractedDirection}, iterations - 1);
+    }
+    else {
+        output += computeReflection(current_hit, material, iterations);
+    }
+
+    return output;
+}
+
+Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination, const Material& material) {
+
+    Color output{};
+
+    if (illumination & phong_ambient)
+        output += material.color * material.ka;
+
+    if (illumination & phong_diffuse || illumination & phong_specular) {
+        for (std::unique_ptr<Light> &light_source : lights) {
+
+            float lightFactor = getLightFactorFor(light_source, current_hit);
+
+            if (lightFactor > 0) {
+                if (illumination & phong_diffuse)
+                    output += lightFactor * light_source->computeDiffuseColorAt(current_hit, material);
+                if (illumination & phong_specular)
+                    output += lightFactor * light_source->computeSpecularColorAt(current_hit, material);
+            }
+        }
+    }
+
+    return output;
 }
