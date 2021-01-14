@@ -70,7 +70,7 @@ Objects:
     kd: 0.8
     ks: 0
     n: 1
-    index: 2
+    index: 1.5
     type: refraction
 - type: sphere
   position: [110,130,200]

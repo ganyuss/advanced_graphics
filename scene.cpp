@@ -59,21 +59,31 @@ Color Scene::trace(const Ray &ray, int iterations)
             }
         }
 
-        double oldAngle = angleBetween(ray.Direction, current_hit.Normal);
+        // source: https://computergraphics.stackexchange.com/questions/4573/refraction-in-a-ray-tracer-what-do-with-an-intersection-within-the-medium
 
-        double indexRatio;
-        if (ray.Direction.dot(current_hit.Normal) > 0) indexRatio = object->material.index;
-        else indexRatio = 1 / object->material.index;
+        double cosIncidence = ray.Direction.dot(current_hit.Normal);
+        double index1 = 1, index2 = object->material.index;
+        Vector normal = current_hit.Normal;
 
-        double newAngle = std::asin(indexRatio * std::sin(oldAngle * M_PI / 180)) * 180 / M_PI;
+        if (cosIncidence < 0) {
+            cosIncidence = -cosIncidence;
+        }
+        else {
+            std::swap(index1, index2);
+            normal = -current_hit.Normal;
+        }
 
-        Vector refractedDirection = rotateAround(
-                sign(ray.Direction.dot(current_hit.Normal)) * current_hit.Normal,
-                getThirdOrthogonalVector(ray.Direction, current_hit.Normal),
-                newAngle
-        );
+        double indexRatio = index1 / index2;
+        double k = 1 - indexRatio * indexRatio * (1 - cosIncidence * cosIncidence);
 
-        output += trace(Ray{current_hit.Position + refractedDirection * 0.1, refractedDirection }, iterations-1);
+        if (k >= 0) {
+            Vector refractedDirection = indexRatio * ray.Direction + (indexRatio * cosIncidence - std::sqrt(k)) * normal;
+
+            output += trace(Ray{current_hit.Position + refractedDirection * 0.1, refractedDirection}, iterations - 1);
+        }
+        else {
+            output = Color{1.0, 0.0, 0.0};
+        }
     }
     else {
         output = object->material.color * object->material.ka;
