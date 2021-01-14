@@ -130,6 +130,9 @@ bool Raytracer::readScene(const std::string& inputFilename)
             Mode mode;
             doc["RenderMode"] >> mode;
             scene.setMode(mode);
+            int maxIterations;
+            doc["MaxIterations"] >> maxIterations;
+            scene.setMaxIterations(maxIterations);
 
             int distmin, distmax;
             doc["DistMin"] >> distmin;

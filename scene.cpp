@@ -116,7 +116,7 @@ void Scene::render(Image &img)
 
     switch (mode) {
         case Mode::PHONG:
-            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, 3); };
+            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, scene->maxIterations); };
             break;
         case Mode::ZBUFFER:
             traceFunction = [] (Scene* scene, const Ray& ray) { return scene->traceZBuf(ray); };
@@ -313,4 +313,8 @@ Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination
     }
 
     return output;
+}
+
+void Scene::setMaxIterations(int iterations) {
+    maxIterations = iterations;
 }

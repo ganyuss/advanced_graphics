@@ -37,6 +37,7 @@ private:
     Point eye;
     Mode mode;
     int near, far;
+    int maxIterations;
 
 public:
 
@@ -49,6 +50,7 @@ public:
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);
     void setMode(Mode mode);
+    void setMaxIterations(int iterations);
     void setNear(int near);
     void setFar(int far);
     void setEye(Point e);
