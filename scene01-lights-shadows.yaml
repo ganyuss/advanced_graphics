@@ -69,8 +69,8 @@ Objects:
     color: [1.0,0.8,0.0]
     ka: 0.2
     kd: 0.8
-    ks: 0
-    n: 1
+    ks: 0.6
+    n: 15
     index: 1.5
     type: refraction
 - type: sphere

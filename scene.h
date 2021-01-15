@@ -58,6 +58,8 @@ private:
     int maxIterations;
 
 public:
+
+    unsigned int superSamplingFactor;
     Camera camera;
     bool SoftShadows = false;
 
@@ -71,6 +73,7 @@ public:
     void setMaxIterations(int iterations);
     void setNear(int near);
     void setFar(int far);
+    void setCamera(Camera c);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }
 
