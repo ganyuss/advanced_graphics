@@ -37,7 +37,11 @@ struct Camera {
     // float ApertureRadius;
     // float ApertureSamples;
 
-    inline Vector ViewDirection() const { return (Center - Eye).normalized(); }
+    inline Point ViewDirection(int x, int y, int h, int w) const {
+        Vector dx = (x - w / 2) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized();
+        Vector dy = (h / 2 - y) * 1 * Up;
+        return Center - Eye + dx + dy;
+    }
 };
 void operator>>(const YAML::Node &node, Camera &camera);
 
@@ -49,13 +53,12 @@ class Scene
 private:
     std::vector<std::unique_ptr<Object>> objects;
     std::vector<std::unique_ptr<Light>> lights;
-    Camera camera;
     Mode mode;
     int near, far;
     int maxIterations;
 
 public:
-
+    Camera camera;
     bool SoftShadows = false;
 
     Color trace(const Ray &ray, int iterations);
@@ -68,7 +71,6 @@ public:
     void setMaxIterations(int iterations);
     void setNear(int near);
     void setFar(int far);
-    void setCamera(Camera c);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }
 

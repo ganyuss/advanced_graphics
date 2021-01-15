@@ -159,8 +159,7 @@ void Scene::render(Image &img)
     int h = img.height();
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
-            Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
-            Ray ray(camera.Eye, (pixel - camera.Eye).normalized());
+            Ray ray(camera.Eye, (camera.ViewDirection(x,y,h,w)).normalized());
             Color col = traceFunction(this, ray);
 
             img(x, y) = col;
@@ -178,11 +177,6 @@ void Scene::addLight(std::unique_ptr<Light>&& l)
     lights.push_back(std::move(l));
 }
 
-void Scene::setCamera(Camera c)
-{
-    camera = c;
-}
-
 void Scene::setMode(Mode m)
 {
     mode = m;
@@ -193,6 +187,10 @@ void Scene::setNear(int n){
 }
 void Scene::setFar(int f){
     far = f;
+}
+
+void Scene::setMaxIterations(int iterations) {
+    maxIterations = iterations;
 }
 
 std::unique_ptr<Object>& Scene::getObjectHitBy(const Ray& ray) {
@@ -340,6 +338,4 @@ Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination
     return output;
 }
 
-void Scene::setMaxIterations(int iterations) {
-    maxIterations = iterations;
-}
+

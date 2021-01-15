@@ -13,7 +13,6 @@
 #  it should be clear that the #-character can be used to insert comments.
 
 RenderMode: PHONG
-Eye: [200,200,1000]
 
 Camera:
   eye: [200,200,1000]

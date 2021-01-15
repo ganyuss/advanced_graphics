@@ -146,7 +146,7 @@ bool Raytracer::readScene(const std::string& inputFilename)
 
             Camera camera{};
             doc["Camera"] >> camera;
-            scene.setCamera(camera);
+            scene.camera = camera;
 
             // Read and parse the scene objects
             const YAML::Node& sceneObjects = doc["Objects"];
@@ -188,7 +188,7 @@ bool Raytracer::readScene(const std::string& inputFilename)
 
 void Raytracer::renderToFile(const std::string& outputFilename)
 {
-    Image img(400,400);
+    Image img(scene.camera.ViewSize[0],scene.camera.ViewSize[1]);
     std::cout << "Tracing..." << std::endl;
     scene.render(img);
     std::cout << "Writing image to " << outputFilename << "..." << std::endl;
