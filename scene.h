@@ -56,6 +56,7 @@ private:
 
 public:
 
+    unsigned int superSamplingFactor;
     bool SoftShadows = false;
 
     Color trace(const Ray &ray, int iterations);

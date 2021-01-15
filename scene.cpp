@@ -157,13 +157,21 @@ void Scene::render(Image &img)
 
     int w = img.width();
     int h = img.height();
+    double delta = 1.0 / (superSamplingFactor+1);
+    unsigned int rayPerPixel = superSamplingFactor * superSamplingFactor;
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
-            Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
-            Ray ray(camera.Eye, (pixel - camera.Eye).normalized());
-            Color col = traceFunction(this, ray);
+            Color pixelColor{};
 
-            img(x, y) = col;
+            for (int i = 0; i < superSamplingFactor; i++) {
+                for (int j = 0; j < superSamplingFactor; j++) {
+                    Point pixel(x + (i+1)*delta, h - 1 - y + (j+1)*delta, 0);
+                    Ray ray(camera.Eye, (pixel - camera.Eye).normalized());
+                    pixelColor += traceFunction(this, ray) / rayPerPixel;
+                }
+            }
+
+            img(x, y) = pixelColor;
         }
     }
 }

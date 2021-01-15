@@ -148,6 +148,9 @@ bool Raytracer::readScene(const std::string& inputFilename)
             doc["Camera"] >> camera;
             scene.setCamera(camera);
 
+            doc["SuperSampling"]["factor"] >> scene.superSamplingFactor;
+
+
             // Read and parse the scene objects
             const YAML::Node& sceneObjects = doc["Objects"];
             if (sceneObjects.GetType() != YAML::CT_SEQUENCE) {
