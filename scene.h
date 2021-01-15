@@ -29,12 +29,27 @@
 enum Mode {PHONG, ZBUFFER, NORMAL};
 void operator>>(const YAML::Node &node, Mode &mode);
 
+struct Camera {
+    Point Eye;
+    Point Center;
+    Vector Up;
+    unsigned int ViewSize[2];
+    // float ApertureRadius;
+    // float ApertureSamples;
+
+    inline Vector ViewDirection() const { return (Center - Eye).normalized(); }
+};
+void operator>>(const YAML::Node &node, Camera &camera);
+
+
+
+
 class Scene
 {
 private:
     std::vector<std::unique_ptr<Object>> objects;
     std::vector<std::unique_ptr<Light>> lights;
-    Point eye;
+    Camera camera;
     Mode mode;
     int near, far;
     int maxIterations;
@@ -53,7 +68,7 @@ public:
     void setMaxIterations(int iterations);
     void setNear(int near);
     void setFar(int far);
-    void setEye(Point e);
+    void setCamera(Camera c);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }
 

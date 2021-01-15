@@ -20,12 +20,37 @@
 #include "scene.h"
 #include "commongeometry.h"
 #include <cmath>
+#include <cassert>
 
 void operator>>(const YAML::Node &node, Mode &mode){
     auto s = node.Read<std::string>();
     std::map<std::string, Mode> map{{"ZBUFFER", Mode::ZBUFFER}, {"PHONG", Mode::PHONG}, {"NORMAL", Mode::NORMAL}};
     mode = map[s];
 }
+
+void readVector(const YAML::Node& node, Vector& t)
+{
+    assert(node.size()==3);
+    node[0] >> t.X();
+    node[1] >> t.Y();
+    node[2] >> t.Z();
+}
+
+void operator >> (const YAML::Node& node, unsigned int tab[2])
+{
+    assert(node.size()==2);
+    node[0] >> tab[0];
+    node[1] >> tab[1];
+}
+
+void operator>>(const YAML::Node &node, Camera &camera) {
+
+    readVector(node["eye"], camera.Eye);
+    readVector(node["center"],camera.Center);
+    readVector(node["up"], camera.Up);
+    node["viewSize"] >> camera.ViewSize;
+}
+
 template<typename Iterator, typename Operator>
 Iterator optimized_min_element(const Iterator& begin, const Iterator& end, Operator ope) {
     std::vector<decltype(ope(*begin))> values;
@@ -135,7 +160,7 @@ void Scene::render(Image &img)
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
-            Ray ray(eye, (pixel - eye).normalized());
+            Ray ray(camera.Eye, (pixel - camera.Eye).normalized());
             Color col = traceFunction(this, ray);
 
             img(x, y) = col;
@@ -153,9 +178,9 @@ void Scene::addLight(std::unique_ptr<Light>&& l)
     lights.push_back(std::move(l));
 }
 
-void Scene::setEye(Point e)
+void Scene::setCamera(Camera c)
 {
-    eye = e;
+    camera = c;
 }
 
 void Scene::setMode(Mode m)

@@ -144,9 +144,9 @@ bool Raytracer::readScene(const std::string& inputFilename)
             doc["SoftShadows"] >> renderSoftShadows;
             scene.SoftShadows = renderSoftShadows;
 
-            Vector eye{};
-            doc["Eye"] >> eye;
-            scene.setEye(eye);
+            Camera camera{};
+            doc["Camera"] >> camera;
+            scene.setCamera(camera);
 
             // Read and parse the scene objects
             const YAML::Node& sceneObjects = doc["Objects"];
