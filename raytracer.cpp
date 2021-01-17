@@ -145,8 +145,15 @@ bool Raytracer::readScene(const std::string& inputFilename)
             scene.SoftShadows = renderSoftShadows;
 
             Camera camera{};
-            doc["Camera"] >> camera;
-            scene.camera = camera;
+            try {
+                doc["Camera"] >> camera;
+                scene.camera = camera;
+            }
+            catch (YAML::Exception e) {
+                Camera cameraDefault{};
+                doc["Eye"] >> cameraDefault.Eye;
+                scene.camera = cameraDefault;
+            }
 
             doc["SuperSampling"]["factor"] >> scene.superSamplingFactor;
 

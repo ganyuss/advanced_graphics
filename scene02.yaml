@@ -5,8 +5,10 @@ RenderMode : PHONG
 
 DistMin : 0
 DistMax : 10000
-SoftShadows: On
+SoftShadows: Off
 MaxIterations: 3
+SuperSampling:
+  factor: 2
 
 Eye: [200,200,1000]
 
