@@ -165,8 +165,7 @@ void Scene::render(Image &img)
 
             for (int i = 0; i < superSamplingFactor; i++) {
                 for (int j = 0; j < superSamplingFactor; j++) {
-                    Point pixel(x + (i+1)*delta, h - 1 - y + (j+1)*delta, 0);
-                    Ray ray(camera.Eye, (pixel - camera.Eye).normalized());
+                    Ray ray(camera.Eye, (camera.ViewDirection(x, y, delta*(i+1), delta*(j+1), h, w)).normalized());
                     pixelColor += traceFunction(this, ray) / rayPerPixel;
                 }
             }

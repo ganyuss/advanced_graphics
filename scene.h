@@ -37,10 +37,10 @@ struct Camera {
     // float ApertureRadius;
     // float ApertureSamples;
 
-    inline Point ViewDirection(int x, int y, int h, int w) const {
-        Vector dx = (x - w / 2) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized();
-        Vector dy = (h / 2 - y) * 1 * Up;
-        return Center - Eye + dx + dy;
+    inline Point ViewDirection(int x, int y, double dx, double dy, int maxX, int maxY) const {
+        Vector directionComponentX = (x - maxY / 2 + dx) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized();
+        Vector directionComponentY = (maxX / 2 - y + dy) * 1 * Up;
+        return Center - Eye + directionComponentX + directionComponentY;
     }
 };
 void operator>>(const YAML::Node &node, Camera &camera);
