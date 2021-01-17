@@ -5,6 +5,8 @@
 #ifndef RAYTRACER_COMMONGEOMETRY_H
 #define RAYTRACER_COMMONGEOMETRY_H
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "triple.h"
 
 inline Vector project(const Vector& vectorToProject, const Vector& reference) {

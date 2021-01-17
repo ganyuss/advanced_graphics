@@ -31,9 +31,9 @@ void operator>>(const YAML::Node &node, Mode &mode);
 
 struct Camera {
     Point Eye;
-    Point Center;
-    Vector Up;
-    unsigned int ViewSize[2];
+    Point Center = {200,200,-200};
+    Vector Up = {0, 1, 0};
+    unsigned int ViewSize[2] = {400, 400};
     // float ApertureRadius;
     // float ApertureSamples;
 
