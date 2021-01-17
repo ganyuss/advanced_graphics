@@ -213,7 +213,8 @@ std::unique_ptr<Object>& Scene::getObjectHitBy(const Ray& ray) {
 
 float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& hit) {
 
-    const int lightSampleNumber = 8;
+    const int lightSampleNumber = 16;
+    const int lightSubSampleNumber = lightSampleNumber / 2;
 
     Vector dPosition = hit.Position + hit.Normal * 0.1;
     Ray newRay = Ray(dPosition, light->Position - dPosition);
@@ -234,54 +235,25 @@ float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& h
         lightPositionDeltaDirection.normalize();
     Vector lightPositionDelta = lightPositionDeltaDirection * light->Size;
 
-    float softShadowFactor = 0;
+    float softLightFactor = 0;
 
     for (std::size_t i = 0; i < lightSampleNumber; ++i) {
         Vector dLightPosition = rotateAround(lightPositionDelta, newRay.Direction, (360.f * i) / lightSampleNumber);
 
-        float newSoftShadowFactor = getLightFactorFor(light, dLightPosition, dPosition);
+        for (std::size_t j = 1; j <= lightSubSampleNumber; ++j) {
 
-        softShadowFactor += newSoftShadowFactor;
-    }
+            Ray borderRay{dPosition, light->Position + (dLightPosition * (static_cast<float>(j) / lightSubSampleNumber)) - dPosition};
+            std::unique_ptr<Object> &objectHit = getObjectHitBy(borderRay);
 
-    return softShadowFactor / static_cast<float>(lightSampleNumber);
-}
-
-float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Vector& deltaLightPosition, const Vector& hitPoint) {
-
-    const int amountOfSamples = 8;
-
-    // Can't use reference here
-    std::vector<std::unique_ptr<Object>*> objectsHit;
-
-    auto isFactorShadowed = [&light, &deltaLightPosition, &hitPoint] (float factor, std::unique_ptr<Object>& object) {
-        Vector lightPos = light->Position + (deltaLightPosition * factor);
-        Ray newRay{hitPoint, lightPos - hitPoint};
-        Hit newHit = object->intersect(newRay);
-        return newHit.Distance < (newRay.Origin - lightPos).norm();
-    };
-
-    for (std::unique_ptr<Object>& object : objects) {
-        if (isFactorShadowed(0, object) || isFactorShadowed(1, object)) {
-            objectsHit.push_back(&object);
+            if (objectHit->intersect(borderRay) == Hit::NO_HIT())
+                softLightFactor++;
+            else
+                softLightFactor += objectHit->intersect(borderRay).Distance /
+                                   (light->Position + dLightPosition - dPosition).norm();
         }
     }
 
-    float shadowFactor = 0;
-
-    for (std::unique_ptr<Object>* object : objectsHit) {
-
-        int ShadowedSamples = 0;
-
-        for (std::size_t i = 0; i < amountOfSamples; ++i) {
-            if (isFactorShadowed(i / static_cast<float>(amountOfSamples), *object))
-                ShadowedSamples++;
-        }
-
-        shadowFactor += ShadowedSamples / static_cast<float>(amountOfSamples);
-    }
-
-    return 1 - shadowFactor;
+    return softLightFactor / static_cast<float>(lightSampleNumber * lightSubSampleNumber);
 }
 
 Color Scene::computeReflection(const Hit& current_hit, const Material& material, int iterations) {

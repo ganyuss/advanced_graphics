@@ -80,7 +80,6 @@ public:
 private:
     std::unique_ptr<Object>& getObjectHitBy(const Ray&);
     float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit);
-    float getLightFactorFor(const std::unique_ptr<Light> &light, const Vector &deltaLightPosition, const Vector& hitPoint);
 
     typedef unsigned char PhongColor;
 
