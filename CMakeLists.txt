@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 
 project(RayTracer)
 
-set(SRCS main.cpp raytracer.cpp sphere.cpp light.cpp material.cpp image.cpp triple.cpp lodepng.cpp scene.cpp Cone.cpp Cone.h commongeometry.h commongeometry.cpp Plane.cpp Plane.h)
+set (CMAKE_CXX_STANDARD 17)
+
+set(SRCS main.cpp raytracer.cpp sphere.cpp light.cpp material.cpp image.cpp triple.cpp lodepng.cpp scene.cpp Cone.cpp commongeometry.cpp Plane.cpp)
 file(GLOB YAML_SRCS "yaml/*.cpp")
 
 file(GLOB YAML_HEADERS "yaml/*.h")
