@@ -38,7 +38,8 @@ struct Camera {
     // float ApertureSamples;
 
     inline Point ViewDirection(int x, int y, double dx, double dy, int maxX, int maxY) const {
-        Vector directionComponentX = (x - maxY / 2 + dx) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized();
+        double scale = Up.norm();
+        Vector directionComponentX = (x - maxY / 2 + dx) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized() * scale;
         Vector directionComponentY = (maxX / 2 - y + dy) * 1 * Up;
         return Center - Eye + directionComponentX + directionComponentY;
     }
