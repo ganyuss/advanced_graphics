@@ -47,8 +47,6 @@ struct Camera {
 void operator>>(const YAML::Node &node, Camera &camera);
 
 
-
-
 class Scene
 {
 private:

@@ -35,6 +35,7 @@ Hit Sphere::intersect(const Ray &ray)
         return Hit::NO_HIT();
     }
 
+
     double dRoot = std::sqrt(discriminant);
     double distance1 = -p - dRoot, distance2 = -p + dRoot;
     double distanceToOrigin;
@@ -55,4 +56,11 @@ Hit Sphere::intersect(const Ray &ray)
     Vector normal = (-Position + intersectionPoint).normalized();
 
     return {distanceToOrigin, intersectionPoint, normal, ray};
+}
+
+std::array<float, 2> Sphere::makeTexture(Point p) {
+    Point center = (p - Position)/Radius;
+    float Y = (center.Y() + 1) /2;
+    float X = (center.X() + 1) /2;
+    return {X, Y};
 }
