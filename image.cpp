@@ -19,13 +19,11 @@
 /*
 * Create a picture. Answer false if failed.
 */
-bool Image::set_extent(int width, int height)
+void Image::set_extent(int width, int height)
 {
     _width = width;
     _height = height;
-    delete[] _pixel;
-    _pixel = size() > 0 ? new Color[size()] : nullptr;
-    return _pixel != nullptr;
+    _pixel.resize(size());
 }
 
 
@@ -34,7 +32,7 @@ void Image::write_png(const char* filename) const
     std::vector<unsigned char> image;
     image.resize(_width * _height * 4);
     auto imageIterator = image.begin();
-    Color *currentPixel = _pixel;
+    auto currentPixel = _pixel.begin();
     while (imageIterator != image.end()) {
         *imageIterator = (unsigned char)(currentPixel->Red() * 255.0);
         imageIterator++;
@@ -73,7 +71,7 @@ void Image::read_png(const char* filename)
 
     // now convert the image data
     auto imageIterator = image.begin();
-    Color *currentPixel = _pixel;
+    auto currentPixel = _pixel.begin();
     while (imageIterator != image.end()) {
         currentPixel->Red() = (*imageIterator)/255.0;
         imageIterator++;

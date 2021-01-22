@@ -16,35 +16,31 @@
 #define IMAGE_H_IOLFQARK
 
 #include <iostream>
+#include <cstring>
+#include <vector>
 #include "triple.h"
 
 
 class Image
 {
 protected:
-    Color* _pixel;
+    std::vector<Color> _pixel;
     int _width;
     int _height;
 
 public:
     Image(int width=0, int height=0)
-        : _pixel(0), _width(0), _height(0)
+        : _pixel(), _width(0), _height(0)
     {
         set_extent(width, height);    //creates array
     }
 
     Image(const char *imageFilename)
-        : _pixel(0), _width(0), _height(0)
+        : _pixel(), _width(0), _height(0)
     {
         read_png(imageFilename);
     }
 
-
-
-    ~Image()
-    {
-        if (_pixel) delete[] _pixel;
-    }
 
     // Normal accessors
     inline void put_pixel(int x, int y, Color c);
@@ -80,10 +76,15 @@ protected:
     { return index(x % _width, y % _height); }
 
     inline int findex(float x, float y) const       //float index
-    { return index(int(x * (_width-1)), int(y * (_height-1))); }
+    {
+        while (x > 1) x -= 1; while (x < 0) x += 1;
+        while (y > 1) y -= 1; while (y < 0) y += 1;
+
+        return index(int(x * (_width-1)), int(y * (_height-1)));
+    }
 
     // Create a picture. Return false if failed.
-    bool set_extent(int width, int height);
+    void set_extent(int width, int height);
 
 };
 
@@ -117,6 +118,7 @@ inline const Color& Image::colorAt(float x, float y) const
 
 inline void Image::derivativeAt(float x, float y, float *dx, float *dy) const
 {
+
     int ix = (int)(x * (_width - 1));
     int iy = (int)(y * (_height - 1));
     *dx = _pixel[windex(ix,iy+1)].Green() - _pixel[index(ix,iy)].Green();
