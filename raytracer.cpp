@@ -53,6 +53,8 @@ Material Raytracer::parseMaterial(const YAML::Node& node) {
         node["texture"] >> texture;
         m.texture = Image(texture.c_str());
         m.isTextured = true;
+        if (m.texture.size() == 0)
+            throw std::runtime_error("File not found: " + texture);
     } catch(YAML::Exception &e) {
         node["color"] >> m.color;
     }
