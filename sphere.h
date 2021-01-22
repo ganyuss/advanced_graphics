@@ -26,7 +26,7 @@ public:
     Sphere(Point Position,double Radius) : Position(Position), Radius(Radius) { }
 
     Hit intersect(const Ray &ray) override;
-    std::array<float, 2> makeTexture(Point) override;
+    std::array<double, 2> getTextureCoordinatesFor(Point p) override;
 
     const Point Position;
     const double Radius;

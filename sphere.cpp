@@ -58,9 +58,25 @@ Hit Sphere::intersect(const Ray &ray)
     return {distanceToOrigin, intersectionPoint, normal, ray};
 }
 
-std::array<float, 2> Sphere::makeTexture(Point p) {
+std::array<double, 2> Sphere::getTextureCoordinatesFor(Point p) {
+    constexpr double twoPi = M_PI * 2;
+    constexpr double oneOverTwoPi = 1 / M_PI * 2;
+
+
     Point center = (p - Position)/Radius;
-    float Y = (center.Y() + 1) /2;
-    float X = (center.X() + 1) /2;
+    double Y = (center.Y() + 1) /2;
+
+    Point centerOnXZ = center;
+    centerOnXZ.Y() = 0;
+    centerOnXZ.normalize();
+
+    double theta;
+
+    if (centerOnXZ.Z() > 0)
+        theta = twoPi - std::acos(centerOnXZ.Z());
+    else
+        theta = std::acos(centerOnXZ.Z());
+
+    double X = theta * oneOverTwoPi;
     return {X, Y};
 }
