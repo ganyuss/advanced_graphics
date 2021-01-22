@@ -45,10 +45,17 @@ void operator >> (const YAML::Node& node, Vector& t)
     node[2] >> t.Z();
 }
 
-Material Raytracer::parseMaterial(const YAML::Node& node)
-{
+Material Raytracer::parseMaterial(const YAML::Node& node) {
     Material m;
-    node["color"] >> m.color;
+
+    try{
+        std::string texture;
+        node["texture"] >> texture;
+        m.texture = Image(texture.c_str());
+        m.isTextured = true;
+    } catch(YAML::Exception &e) {
+        node["color"] >> m.color;
+    }
     node["ka"] >> m.ka;
     node["kd"] >> m.kd;
     node["ks"] >> m.ks;
@@ -149,7 +156,7 @@ bool Raytracer::readScene(const std::string& inputFilename)
                 doc["Camera"] >> camera;
                 scene.camera = camera;
             }
-            catch (YAML::Exception e) {
+            catch (YAML::Exception &e) {
                 Camera cameraDefault{};
                 doc["Eye"] >> cameraDefault.Eye;
                 scene.camera = cameraDefault;

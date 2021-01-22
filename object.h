@@ -20,7 +20,7 @@
 #include "triple.h"
 #include "light.h"
 #include "material.h"
-
+#include <array>
 
 class Object {
 public:
