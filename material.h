@@ -26,10 +26,9 @@ struct Material
 {
     bool isTextured = false;
 
-    union {
-        Color color;
-        Image texture;
-    };
+    // Only one of them should be used
+    Color color;
+    Image texture;
 
 
     double ka;          // ambient intensity
@@ -41,13 +40,6 @@ struct Material
 
     Material() : ka{}, kd{}, ks{}, n{}, type{}
     { }
-
-    ~Material() {
-        if (isTextured)
-            texture.~Image();
-        else
-            color.~Color();
-    }
 };
 
 void operator>>(const YAML::Node &node, MaterialType &mode);
