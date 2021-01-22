@@ -298,6 +298,7 @@ Color Scene::computeRefraction(const Hit& current_hit, const Material& material,
 Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination, const Material& material) {
 
     Color output{};
+    // Color colorOnHit = current_hit;
 
     if (illumination & phong_ambient)
         output += material.color * material.ka;

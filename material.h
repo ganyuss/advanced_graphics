@@ -18,12 +18,20 @@
 #include <iostream>
 #include "triple.h"
 #include "yaml/node.h"
+#include "image.h"
 
 enum MaterialType { DEFAULT, REFLECTION, REFRACTION };
 
 struct Material
 {
-    Color  color;        // base color
+    bool isTextured;
+
+    union {
+        Color color;
+        Image texture;
+    };
+
+
     double ka;          // ambient intensity
     double kd;          // diffuse intensity
     double ks;          // specular intensity 
@@ -31,8 +39,15 @@ struct Material
     double index;
     MaterialType type;
 
-    Material() : color{}, ka{}, kd{}, ks{}, n{}, type{}
+    Material() : ka{}, kd{}, ks{}, n{}, type{}
     { }
+
+    ~Material() {
+        if (isTextured)
+            texture.~Image();
+        else
+            color.~Color();
+    }
 };
 
 void operator>>(const YAML::Node &node, MaterialType &mode);
