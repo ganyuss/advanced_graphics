@@ -21,6 +21,7 @@ public:
     { }
 
     Hit intersect(const Ray &ray) override;
+    std::array<double, 2> getTextureCoordinatesFor(Point) override;
 
     const Point Position;
     const double Radius;

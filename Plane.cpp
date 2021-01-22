@@ -22,3 +22,7 @@ Hit Plane::intersect(const Ray &ray) {
             ray
         );
 }
+
+std::array<double, 2> Plane::getTextureCoordinatesFor(Point) {
+    return {0, 0};
+}

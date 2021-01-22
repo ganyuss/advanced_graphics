@@ -105,3 +105,7 @@ Hit Cone::getHitOnSlope(const Ray& ray) {
             return (hit1.Distance < hit2.Distance) ? hit1 : hit2;
     }
 }
+
+std::array<double, 2> Cone::getTextureCoordinatesFor(Point) {
+    return {0, 0};
+}
