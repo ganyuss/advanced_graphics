@@ -27,8 +27,17 @@ public:
     Material material;
 
     virtual Hit intersect(const Ray &ray) = 0;
-
     virtual std::array<double, 2> getTextureCoordinatesFor(Point) = 0;
+
+    inline Color getColorOnPosition(const Point& position) {
+        if (material.isTextured) {
+            std::array<double, 2> uv = getTextureCoordinatesFor(position);
+            return material.texture.colorAt(uv[0], uv[1]);
+        }
+        else {
+            return material.color;
+        }
+    }
 
     virtual ~Object() = default;
 };

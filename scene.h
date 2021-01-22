@@ -89,7 +89,7 @@ private:
 
     Color computeReflection(const Hit &, const Material &, int iterations);
     Color computeRefraction(const Hit &current_hit, const Material &, int iterations);
-    Color computePhong(const Hit &, Scene::PhongColor illumination, const Material &);
+    Color computePhong(const Hit &current_hit, Scene::PhongColor illumination, const std::unique_ptr<Object> &object_hit);
 };
 
 #endif /* end of include guard: SCENE_H_KNBLQLP6 */

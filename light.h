@@ -107,7 +107,7 @@ public:
 
     }
 
-    virtual Color computeDiffuseColorAt(const Hit& hit_point, const Material& material) const {
+    virtual Color computeDiffuseColorAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
 
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();
@@ -116,7 +116,7 @@ public:
         if (diffuseFactor <= 0){
             diffuseColor.set(0,0,0);
         }else {
-            diffuseColor = color * material.color * material.kd * diffuseFactor;
+            diffuseColor = color * colorOnHit * material.kd * diffuseFactor;
         }
 
         return diffuseColor;

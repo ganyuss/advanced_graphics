@@ -24,7 +24,7 @@ enum MaterialType { DEFAULT, REFLECTION, REFRACTION };
 
 struct Material
 {
-    bool isTextured;
+    bool isTextured = false;
 
     union {
         Color color;

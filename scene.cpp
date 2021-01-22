@@ -76,12 +76,12 @@ Color Scene::trace(const Ray &ray, int iterations)
 
     if (object->material.type == MaterialType::REFRACTION && iterations > 0) {
 
-        output += computePhong(current_hit, phong_specular, object->material);
+        output += computePhong(current_hit, phong_specular, object);
         output += computeRefraction(current_hit, object->material, iterations);
     }
     else {
 
-        output += computePhong(current_hit, phong_all, object->material);
+        output += computePhong(current_hit, phong_all, object);
 
         if (iterations != 0 && object->material.type == MaterialType::REFLECTION) {
             output += computeReflection(current_hit, object->material, iterations);
@@ -295,13 +295,13 @@ Color Scene::computeRefraction(const Hit& current_hit, const Material& material,
     return output;
 }
 
-Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination, const Material& material) {
+Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination, const std::unique_ptr<Object> &object_hit) {
 
     Color output{};
-    // Color colorOnHit = current_hit;
+    Color colorOnHit = object_hit->getColorOnPosition(current_hit.Position);
 
     if (illumination & phong_ambient)
-        output += material.color * material.ka;
+        output += colorOnHit * object_hit->material.ka;
 
     if (illumination & phong_diffuse || illumination & phong_specular) {
         for (std::unique_ptr<Light> &light_source : lights) {
@@ -310,9 +310,9 @@ Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination
 
             if (lightFactor > 0) {
                 if (illumination & phong_diffuse)
-                    output += lightFactor * light_source->computeDiffuseColorAt(current_hit, material);
+                    output += lightFactor * light_source->computeDiffuseColorAt(current_hit, object_hit->material, colorOnHit);
                 if (illumination & phong_specular)
-                    output += lightFactor * light_source->computeSpecularColorAt(current_hit, material);
+                    output += lightFactor * light_source->computeSpecularColorAt(current_hit, object_hit->material);
             }
         }
     }
