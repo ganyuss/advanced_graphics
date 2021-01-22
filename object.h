@@ -28,6 +28,8 @@ public:
 
     virtual Hit intersect(const Ray &ray) = 0;
 
+    virtual std::array<float, 2> makeTexture(Point) = 0;
+
     virtual ~Object() = default;
 };
 

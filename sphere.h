@@ -18,6 +18,7 @@
 #define SPHERE_H_115209AE
 
 #include "object.h"
+#include <array>
 
 class Sphere : public Object
 {
@@ -25,6 +26,7 @@ public:
     Sphere(Point Position,double Radius) : Position(Position), Radius(Radius) { }
 
     Hit intersect(const Ray &ray) override;
+    std::array<float, 2> makeTexture(Point) override;
 
     const Point Position;
     const double Radius;
