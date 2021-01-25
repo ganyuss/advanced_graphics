@@ -18,38 +18,8 @@
 #include <functional>
 #include <stdexcept>
 #include "scene.h"
-#include "commongeometry.h"
 #include <cmath>
 #include <cassert>
-
-void operator>>(const YAML::Node &node, Mode &mode){
-    auto s = node.Read<std::string>();
-    std::map<std::string, Mode> map{{"ZBUFFER", Mode::ZBUFFER}, {"PHONG", Mode::PHONG}, {"NORMAL", Mode::NORMAL}};
-    mode = map[s];
-}
-
-void readVector(const YAML::Node& node, Vector& t)
-{
-    assert(node.size()==3);
-    node[0] >> t.X();
-    node[1] >> t.Y();
-    node[2] >> t.Z();
-}
-
-void operator >> (const YAML::Node& node, unsigned int tab[2])
-{
-    assert(node.size()==2);
-    node[0] >> tab[0];
-    node[1] >> tab[1];
-}
-
-void operator>>(const YAML::Node &node, Camera &camera) {
-
-    readVector(node["eye"], camera.Eye);
-    readVector(node["center"],camera.Center);
-    readVector(node["up"], camera.Up);
-    node["viewSize"] >> camera.ViewSize;
-}
 
 template<typename Iterator, typename Operator>
 Iterator optimized_min_element(const Iterator& begin, const Iterator& end, Operator ope) {

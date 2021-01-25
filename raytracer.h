@@ -26,11 +26,6 @@ class Raytracer {
 private:
     Scene scene;
 
-    // Couple of private functions for parsing YAML nodes
-    static Material parseMaterial(const YAML::Node& node);
-    std::unique_ptr<Object> parseObject(const YAML::Node& node);
-    std::unique_ptr<Light> parseLight(const YAML::Node& node);
-
 public:
     Raytracer() = default;
 

@@ -33,7 +33,7 @@ struct Camera {
     Point Eye;
     Point Center = {200,200,-200};
     Vector Up = {0, 1, 0};
-    unsigned int ViewSize[2] = {400, 400};
+    std::array<unsigned int, 2> ViewSize = {400, 400};
     // float ApertureRadius;
     // float ApertureSamples;
 

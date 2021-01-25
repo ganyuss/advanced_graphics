@@ -13,108 +13,229 @@
 //
 
 #include "raytracer.h"
-#include "object.h"
 #include "sphere.h"
-#include "material.h"
-#include "light.h"
-#include "image.h"
-#include "yaml/yaml.h"
 #include "Cone.h"
-#include <ctype.h>
 #include <fstream>
-#include <assert.h>
 
-// Functions to ease reading from YAML input
-template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
-void operator >> (const YAML::Node& node, Triple& t);
-template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
-Triple parseTriple(const YAML::Node& node);
-
-void operator >> (const YAML::Node& node, Color& t)
-{
-    assert(node.size()==3);
-    node[0] >> t.Red();
-    node[1] >> t.Green();
-    node[2] >> t.Blue();
-}
-void operator >> (const YAML::Node& node, Vector& t)
-{
-    assert(node.size()==3);
-    node[0] >> t.X();
-    node[1] >> t.Y();
-    node[2] >> t.Z();
-}
-
-Material Raytracer::parseMaterial(const YAML::Node& node) {
-    Material m;
-
+template <typename VariableType>
+bool tryRead(const YAML::Node &node, VariableType &variable, const VariableType& defaultValue = VariableType{}) {
     try{
-        std::string texture;
-        node["texture"] >> texture;
-        m.texture = Image(texture.c_str());
-        m.isTextured = true;
-        if (m.texture.size() == 0)
-            throw std::runtime_error("File not found: " + texture);
+        node >> variable;
+        return true;
     } catch(YAML::Exception &e) {
-        node["color"] >> m.color;
+        variable = defaultValue;
     }
-    node["ka"] >> m.ka;
-    node["kd"] >> m.kd;
-    node["ks"] >> m.ks;
-    node["n"] >> m.n;
-    node["index"] >> m.index;
-    node["type"] >> m.type;
-    return m;
+
+    return false;
 }
 
-std::unique_ptr<Object> Raytracer::parseObject(const YAML::Node& node)
-{
-    std::unique_ptr<Object> returnObject;
+template <typename VariableType>
+bool tryRead(const YAML::Node &node, const std::string& key, VariableType &variable, const VariableType& defaultValue = VariableType{});
+
+
+template <>
+bool tryRead<Mode>(const YAML::Node &node, Mode &variable, const Mode& defaultValue) {
+    try {
+        auto modeString = node.Read<std::string>();
+
+        std::map<std::string, Mode> map{{"ZBUFFER", Mode::ZBUFFER}, {"PHONG", Mode::PHONG}, {"GOOCH", Mode::GOOCH}, {"NORMAL", Mode::NORMAL}};
+        if (map.find(modeString) != map.end())
+            variable = map[modeString];
+        else
+            variable = defaultValue;
+    }
+    catch(YAML::Exception& e) {
+        variable = defaultValue;
+    }
+
+    return true;
+}
+
+template <>
+bool tryRead<Vector>(const YAML::Node &node, Vector &variable, const Vector& defaultValue) {
+
+    if (node.size() != 3) {
+        variable = defaultValue;
+        return false;
+    }
+
+    try {
+        node[0] >> variable.X();
+        node[1] >> variable.Y();
+        node[2] >> variable.Z();
+    }
+    catch (YAML::Exception & e) {
+        variable = defaultValue;
+        return false;
+    }
+
+    return true;
+}
+
+template <>
+bool tryRead<Color>(const YAML::Node &node, Color &variable, const Color& defaultValue) {
+
+    if (node.size() != 3) {
+        variable = defaultValue;
+        return false;
+    }
+
+    try {
+        node[0] >> variable.Red();
+        node[1] >> variable.Green();
+        node[2] >> variable.Blue();
+    }
+    catch (YAML::Exception & e) {
+        variable = defaultValue;
+        return false;
+    }
+
+    return true;
+}
+
+template <>
+bool tryRead<std::array<unsigned int, 2>>(const YAML::Node &node, std::array<unsigned int, 2>& variable, std::array<unsigned int, 2>const& defaultValue) {
+
+    bool everythingOK = node.size() != 2;
+
+    if (everythingOK) {
+        try {
+            for (std::size_t i = 0; i < 2; ++i)
+                node[i] >> variable[i];
+        }
+        catch (YAML::Exception &e) {
+            everythingOK = false;
+        }
+    }
+
+    if (! everythingOK) {
+        variable = defaultValue;
+    }
+
+    return everythingOK;
+}
+
+template <>
+bool tryRead<Camera>(const YAML::Node &node, Camera& variable, const Camera& defaultValue) {
+
+    bool everythingOK = tryRead(node, "eye", variable.Eye);
+
+    tryRead(node, "center", variable.Center, Vector{0, 0, 0});
+    tryRead(node, "up", variable.Up, Vector{0, 1, 0});
+    tryRead(node, "viewSize", variable.ViewSize, {400, 400});
+
+    if (! everythingOK) {
+        variable = defaultValue;
+    }
+
+    return everythingOK;
+}
+
+template <>
+bool tryRead<Material>(const YAML::Node &node, Material &variable, const Material& defaultValue) {
+    bool everythingOK = true;
+
+    std::string texture;
+    if (tryRead(node, "texture", texture)) {
+        variable.texture = Image(texture.c_str());
+        variable.isTextured = true;
+        if (variable.texture.size() == 0)
+            throw std::runtime_error("File not found: " + texture);
+    }
+    else {
+        everythingOK = tryRead(node, "color", variable.color, defaultValue.color);
+    }
+
+
+    everythingOK = everythingOK
+            && tryRead(node, "ka", variable.ka, defaultValue.ka)
+            && tryRead(node, "kd", variable.kd, defaultValue.kd)
+            && tryRead(node, "ks", variable.ks, defaultValue.ks)
+            && tryRead(node, "n", variable.n, defaultValue.n);
+
+    tryRead(node, "index", variable.index, 1.);
+    tryRead(node, "type", variable.type, MaterialType::DEFAULT);
+
+    return everythingOK;
+}
+
+template <>
+bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Object>& variable, const std::unique_ptr<Object>& defaultValueUnused) {
     std::string objectType;
-    node["type"] >> objectType;
+    tryRead(node, "type", objectType);
+    bool everythingOK = false;
 
     if (objectType == "sphere") {
         Point pos{};
-        node["position"] >> pos;
         double r;
-        node["radius"] >> r;
-        returnObject = std::make_unique<Sphere>(pos, r);
+
+        everythingOK = tryRead(node, "position", pos)
+            && tryRead(node, "radius", r);
+
+        if (everythingOK)
+            variable = std::make_unique<Sphere>(pos, r);
     }
     else if (objectType == "cone") {
         Point pos{};
-        node["position"] >> pos;
         double r;
-        node["radius"] >> r;
         Vector up{};
-        node["up"] >> up;
-        returnObject = std::make_unique<Cone>(pos, r, up);
+
+        everythingOK = tryRead(node, "position", pos)
+            && tryRead(node, "radius", r)
+            && tryRead(node, "up", up);
+
+        if (everythingOK)
+            variable = std::make_unique<Cone>(pos, r, up);
     }
     else if (objectType == "plane") {
         Point pos{};
-        node["position"] >> pos;
         Vector norm{};
-        node["normal"] >> norm;
-        returnObject = std::make_unique<Plane>(pos, norm);
+
+        everythingOK = tryRead(node, "position", pos)
+            && tryRead(node, "normal", norm);
+
+        if (everythingOK)
+            variable = std::make_unique<Plane>(pos, norm);
     }
 
-    if (returnObject) {
+    if (variable && everythingOK) {
         // read the material and attach to object
-        returnObject->material = parseMaterial(node["material"]);
+        everythingOK = tryRead(node, "material", variable->material);
     }
 
-    return returnObject;
+    return everythingOK;
 }
 
-std::unique_ptr<Light> Raytracer::parseLight(const YAML::Node& node)
+template <>
+bool tryRead(const YAML::Node &node, std::unique_ptr<Light>& variable, const std::unique_ptr<Light>& defaultValueUnused)
 {
-    Point position;
-    node["position"] >> position;
-    Color color;
-    node["color"] >> color;
-    float size = 0;
-    node["size"] >> size;
+    bool everythingOK;
 
-    return std::make_unique<Light>(position, color, size);
+    Point position;
+    Color color{};
+    float size;
+
+    everythingOK = tryRead(node, "position", position);
+    tryRead(node, "color", color, Color{1, 1, 1});
+    tryRead(node, "size", size, 200.f);
+
+    if (everythingOK)
+        variable = std::make_unique<Light>(position, color, size);
+
+    return everythingOK;
+}
+
+template <typename VariableType>
+bool tryRead(const YAML::Node &node, const std::string& key, VariableType &variable, const VariableType& defaultValue)
+{
+    try{
+        node[key];
+    } catch(YAML::Exception &e) {
+        variable = defaultValue;
+        return false;
+    }
+
+    return tryRead(node[key], variable, defaultValue);
 }
 
 /*
@@ -137,34 +258,41 @@ bool Raytracer::readScene(const std::string& inputFilename)
 
             // Read scene configuration options
             Mode mode;
-            doc["RenderMode"] >> mode;
-            scene.setMode(mode);
             int maxIterations;
-            doc["MaxIterations"] >> maxIterations;
-            scene.setMaxIterations(maxIterations);
-
             int distmin, distmax;
-            doc["DistMin"] >> distmin;
-            doc["DistMax"] >> distmax;
+            bool renderSoftShadows;
+
+            tryRead(doc, "RenderMode", mode, Mode::PHONG);
+            tryRead(doc, "MaxIterations", maxIterations, 0);
+            tryRead(doc, "DistMin", distmin, 0);
+            tryRead(doc, "DistMax", distmax, 10000);
+            tryRead(doc, "SoftShadows", renderSoftShadows, false);
+
+            scene.setMode(mode);
+            scene.setMaxIterations(maxIterations);
             scene.setNear(distmin);
             scene.setFar(distmax);
-
-            bool renderSoftShadows = true;
-            doc["SoftShadows"] >> renderSoftShadows;
             scene.SoftShadows = renderSoftShadows;
 
             Camera camera{};
-            try {
-                doc["Camera"] >> camera;
+
+            if (tryRead(doc, "Camera", camera)) {
                 scene.camera = camera;
             }
-            catch (YAML::Exception &e) {
+            else {
                 Camera cameraDefault{};
-                doc["Eye"] >> cameraDefault.Eye;
+                tryRead(doc, "Eye", cameraDefault.Eye, Vector{200, 200, 0});
                 scene.camera = cameraDefault;
             }
 
-            doc["SuperSampling"]["factor"] >> scene.superSamplingFactor;
+            try {
+                const YAML::Node& n = doc["SuperSampling"];
+                tryRead<unsigned int>(n, "factor", scene.superSamplingFactor, 1);
+            }
+            catch (YAML::Exception & e) {
+                scene.superSamplingFactor = 1;
+            }
+
 
 
             // Read and parse the scene objects
@@ -173,11 +301,12 @@ bool Raytracer::readScene(const std::string& inputFilename)
                 std::cerr << "Error: expected a sequence of objects." << std::endl;
                 return false;
             }
-            for(YAML::Iterator it=sceneObjects.begin();it!=sceneObjects.end();++it) {
-                std::unique_ptr<Object> obj = parseObject(*it);
+            for(YAML::Iterator it = sceneObjects.begin(); it != sceneObjects.end(); ++it) {
+                std::unique_ptr<Object> object;
+
                 // Only add object if it is recognized
-                if (obj) {
-                    scene.addObject(std::move(obj));
+                if (tryRead(*it, object)) {
+                    scene.addObject(std::move(object));
                 } else {
                     std::cerr << "Warning: found object of unknown type, ignored." << std::endl;
                 }
@@ -190,7 +319,14 @@ bool Raytracer::readScene(const std::string& inputFilename)
                 return false;
             }
             for(YAML::Iterator it=sceneLights.begin(); it!=sceneLights.end(); ++it) {
-                scene.addLight(parseLight(*it));
+                std::unique_ptr<Light> light;
+
+                // Only add object if it is recognized
+                if (tryRead(*it, light)) {
+                    scene.addLight(std::move(light));
+                } else {
+                    std::cerr << "Warning: found unreadable light, ignored." << std::endl;
+                }
             }
         }
         if (parser) {
