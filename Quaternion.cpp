@@ -10,10 +10,12 @@ double Quaternion::norm() const {
 
 void Quaternion::normalize() {
     double normValue = norm();
-    x /= normValue;
-    y /= normValue;
-    z /= normValue;
-    w /= normValue;
+    if (normValue != 1) {
+        x /= normValue;
+        y /= normValue;
+        z /= normValue;
+        w /= normValue;
+    }
 }
 
 Quaternion Quaternion::normalized() const {
@@ -39,15 +41,16 @@ Quaternion Quaternion::conjugate() const {
 }
 
 Quaternion& operator*=(Quaternion& q1, const Quaternion& q2) {
-    q1.x *= q2.x;
-    q1.y *= q2.y;
-    q1.z *= q2.z;
-    q1.w *= q2.w;
+    q1 = q1*q2;
     return q1;
 }
 
 Quaternion operator*(const Quaternion& q1, const Quaternion& q2) {
-    Quaternion output{q1};
-    output *= q2;
+    Quaternion output{};
+    // source: https://en.wikipedia.org/wiki/Quaternion#Hamilton_product
+    output.x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y;
+    output.y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w - q1.z*q2.x;
+    output.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w;
+    output.w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z;
     return output;
 }
