@@ -76,12 +76,12 @@ Color Scene::trace(const Ray &ray, int iterations)
 
     if (object->material.type == MaterialType::REFRACTION && iterations > 0) {
 
-        output += computePhong(current_hit, phong_specular, object);
+        output += computeIllumination(current_hit, specular, object);
         output += computeRefraction(current_hit, object->material, iterations);
     }
     else {
 
-        output += computePhong(current_hit, phong_all, object);
+        output += computeIllumination(current_hit, all, object);
 
         if (iterations != 0 && object->material.type == MaterialType::REFLECTION) {
             output += computeReflection(current_hit, object->material, iterations);
@@ -141,6 +141,7 @@ void Scene::render(Image &img)
 
     switch (mode) {
         case Mode::PHONG:
+        case Mode::GOOCH:
             traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, scene->maxIterations); };
             break;
         case Mode::ZBUFFER:
@@ -295,25 +296,52 @@ Color Scene::computeRefraction(const Hit& current_hit, const Material& material,
     return output;
 }
 
-Color Scene::computePhong(const Hit& current_hit, Scene::PhongColor illumination, const std::unique_ptr<Object> &object_hit) {
+
+Color Scene::computeIllumination(const Hit &hit, Scene::IlluminationType illumination, const std::unique_ptr<Object> &object_hit) {
+    if (mode == Mode::PHONG)
+        return computePhong(hit, illumination, object_hit);
+    if (mode == Mode::GOOCH)
+        return computeGooch(hit, illumination, object_hit);
+
+    return Color{0, 0, 0};
+}
+
+Color Scene::computePhong(const Hit& current_hit, Scene::IlluminationType illumination, const std::unique_ptr<Object> &object_hit) {
 
     Color output{};
     Color colorOnHit = object_hit->getColorOnPosition(current_hit.Position);
 
-    if (illumination & phong_ambient)
+    if (illumination & ambient)
         output += colorOnHit * object_hit->material.ka;
 
-    if (illumination & phong_diffuse || illumination & phong_specular) {
+    if (illumination & diffuse || illumination & specular) {
         for (std::unique_ptr<Light> &light_source : lights) {
 
             float lightFactor = getLightFactorFor(light_source, current_hit);
 
             if (lightFactor > 0) {
-                if (illumination & phong_diffuse)
-                    output += lightFactor * light_source->computeDiffuseColorAt(current_hit, object_hit->material, colorOnHit);
-                if (illumination & phong_specular)
-                    output += lightFactor * light_source->computeSpecularColorAt(current_hit, object_hit->material);
+                if (illumination & diffuse)
+                    output += lightFactor *
+                            light_source->computeDiffusePhongAt(current_hit, object_hit->material, colorOnHit);
+                if (illumination & specular)
+                    output += lightFactor * light_source->computeSpecularPhongAt(current_hit, object_hit->material);
             }
+        }
+    }
+
+    return output;
+}
+
+Color Scene::computeGooch(const Hit &current_hit, Scene::IlluminationType illumination, const std::unique_ptr<Object> &object_hit) {
+    Color output{};
+    Color colorOnHit = object_hit->getColorOnPosition(current_hit.Position);
+
+    if (illumination & diffuse || illumination & specular) {
+        for (std::unique_ptr<Light> &light_source : lights) {
+            if (illumination & diffuse)
+                output += light_source->computeDiffuseGoochAt(current_hit, object_hit->material, colorOnHit);
+            if (illumination & specular)
+                output += light_source->computeSpecularGoochAt(current_hit, object_hit->material, colorOnHit);
         }
     }
 

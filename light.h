@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <limits>
+#include <algorithm>
 #include "triple.h"
 #include "material.h"
 #include "commongeometry.h"
@@ -91,7 +92,7 @@ public:
     Light(Point Position, Color c, float size) : Position(Position), color(c), Size(size)
     { }
 
-    virtual Color computeSpecularColorAt(const Hit& hit_point, const Material& material) const {
+    [[nodiscard]] virtual Color computeSpecularPhongAt(const Hit& hit_point, const Material& material) const {
         Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
         ray_reflection.normalize();
         Vector lightIncidence = Position - hit_point.Position;
@@ -107,7 +108,7 @@ public:
 
     }
 
-    virtual Color computeDiffuseColorAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
+    [[nodiscard]] virtual Color computeDiffusePhongAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
 
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();
@@ -121,6 +122,42 @@ public:
 
         return diffuseColor;
 
+    }
+
+    [[nodiscard]] virtual Color computeDiffuseGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
+        // source (adapted): https://rendermeapangolin.wordpress.com/2015/05/07/gooch-shading/
+        float a = 0.3;
+        float b = 0.6;
+
+        Vector lightIncidence = Position - hit_point.Position;
+        lightIncidence.normalize();
+        double diffuseFactor = hit_point.Normal.dot(lightIncidence);
+        diffuseFactor = (diffuseFactor + 1) / 2;
+        Color diffuseColor = (1 - diffuseFactor) * (Color{0, 0, a})
+                        + diffuseFactor * b * (color * colorOnHit * material.kd);
+
+        // Highlights
+        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
+        float ER = std::clamp(lightIncidence.dot(ray_reflection.normalized()), 0.0, 1.0);
+
+        Color specular = color * std::pow(ER, material.n);
+
+        return diffuseColor; // + specular;
+    }
+
+    [[nodiscard]] virtual Color computeSpecularGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
+        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
+        ray_reflection.normalize();
+        Vector lightIncidence = Position - hit_point.Position;
+        lightIncidence.normalize();
+
+        double specularFactor = ray_reflection.dot(lightIncidence);
+        if (specularFactor < 0) {
+            specularFactor = 0;
+        }
+        Color specularColor = color * material.ks * pow(specularFactor,material.n);
+
+        return specularColor;
     }
 
     Point Position;

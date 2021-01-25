@@ -26,7 +26,7 @@
 #include "yaml/yaml.h"
 #include "commongeometry.h"
 
-enum Mode {PHONG, ZBUFFER, NORMAL};
+enum Mode {PHONG, GOOCH, ZBUFFER, NORMAL};
 void operator>>(const YAML::Node &node, Mode &mode);
 
 struct Camera {
@@ -80,16 +80,19 @@ private:
     std::unique_ptr<Object>& getObjectHitBy(const Ray&);
     float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit);
 
-    typedef unsigned char PhongColor;
+    typedef unsigned char IlluminationType;
 
-    PhongColor phong_ambient = 0x01;
-    PhongColor phong_diffuse = 0x02;
-    PhongColor phong_specular = 0x04;
-    PhongColor phong_all = phong_ambient | phong_diffuse | phong_specular;
+    IlluminationType ambient = 0x01;
+    IlluminationType diffuse = 0x02;
+    IlluminationType specular = 0x04;
+    IlluminationType all = ambient | diffuse | specular;
 
     Color computeReflection(const Hit &, const Material &, int iterations);
     Color computeRefraction(const Hit &current_hit, const Material &, int iterations);
-    Color computePhong(const Hit &current_hit, Scene::PhongColor illumination, const std::unique_ptr<Object> &object_hit);
+    Color computeIllumination(const Hit &, Scene::IlluminationType, const std::unique_ptr<Object> &object_hit);
+
+    Color computePhong(const Hit &current_hit, Scene::IlluminationType illumination, const std::unique_ptr<Object> &object_hit);
+    Color computeGooch(const Hit &, Scene::IlluminationType, const std::unique_ptr<Object> &object_hit);
 };
 
 #endif /* end of include guard: SCENE_H_KNBLQLP6 */
