@@ -5,17 +5,15 @@
 #include "Quaternion.h"
 
 double Quaternion::norm() const {
-    return x*x + y*y + z*z + w*w;
+    return std::sqrt(x*x + y*y + z*z + w*w);
 }
 
 void Quaternion::normalize() {
-    double normValue = norm();
-    if (normValue != 1) {
-        x /= normValue;
-        y /= normValue;
-        z /= normValue;
-        w /= normValue;
-    }
+    double normalizationFactor = 1 / norm();
+    x *= normalizationFactor;
+    y *= normalizationFactor;
+    z *= normalizationFactor;
+    w *= normalizationFactor;
 }
 
 Quaternion Quaternion::normalized() const {
