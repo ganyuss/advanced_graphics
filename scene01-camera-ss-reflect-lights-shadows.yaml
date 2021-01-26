@@ -16,9 +16,9 @@ RenderMode: PHONG
 
 Camera:
   eye: [200,200,1000]
-  center: [200,200,0]
+  center: [0,0,0]
   up: [0,1,0]
-  viewSize: [400,400]
+  viewSize: [800,400]
 
 DistMin: 0
 DistMax: 10000
@@ -62,7 +62,7 @@ Objects:
   position: [290,170,150]
   radius: 50
   material: # red
-    color: [1.0,0.0,0.0]
+    texture: ../earth.png
     ka: 0.2
     kd: 0.7
     ks: 0.8
@@ -78,8 +78,8 @@ Objects:
     kd: 0.8
     ks: 0
     n: 1
-    index: 1
-    type: default
+    index: 1.5
+    type: refraction
 - type: sphere
   position: [110,130,200]
   radius: 50
