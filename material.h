@@ -24,11 +24,9 @@ enum MaterialType { DEFAULT, REFLECTION, REFRACTION };
 
 struct Material
 {
-    bool isTextured = false;
 
-    // Only one of them should be used
     Color color;
-    Image texture;
+    std::optional<Image> texture;
 
 
     double ka;          // ambient intensity

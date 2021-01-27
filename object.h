@@ -33,9 +33,9 @@ public:
     virtual std::array<double, 2> getTextureCoordinatesFor(Point) = 0;
 
     inline Color getColorOnPosition(const Point& position) {
-        if (material.isTextured) {
+        if (material.texture.has_value()) {
             std::array<double, 2> uv = getTextureCoordinatesFor(position);
-            return material.texture.colorAt(uv[0], uv[1]);
+            return material.texture.value().colorAt(uv[0], uv[1]);
         }
         else {
             return material.color;

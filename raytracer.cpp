@@ -138,8 +138,7 @@ bool tryRead<Material>(const YAML::Node &node, Material &variable, const Materia
     std::string texture;
     if (tryRead(node, "texture", texture)) {
         variable.texture = Image(texture.c_str());
-        variable.isTextured = true;
-        if (variable.texture.size() == 0)
+        if (variable.texture.value().size() == 0)
             throw std::runtime_error("File not found: " + texture);
     }
     else {
