@@ -16,7 +16,7 @@ RenderMode: PHONG
 
 Camera:
   eye: [200,200,1000]
-  center: [0,0,0]
+  center: [200,200,0]
   up: [0,1,0]
   viewSize: [800,400]
 
@@ -25,7 +25,7 @@ DistMax: 10000
 SoftShadows: Off
 MaxIterations: 3
 SuperSampling:
-  factor: 4
+  factor: 1
 
 Lights:
 - position: [-200,600,1500]
@@ -65,7 +65,7 @@ Objects:
     texture: ../earth.png
     ka: 0.2
     kd: 0.7
-    ks: 0.8
+    specularMap: ../earth_specular_map.png
     n: 32
     index: 1
     type: default

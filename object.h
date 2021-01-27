@@ -42,6 +42,16 @@ public:
         }
     }
 
+    inline double getSpecularOnPosition(const Point& position) {
+        if (material.specularMap.has_value()) {
+            std::array<double, 2> uv = getTextureCoordinatesFor(position);
+            return material.specularMap.value().colorAt(uv[0], uv[1]).Red(); // Reading the red channel here, doesn't matter
+        }
+        else {
+            return material.ks;
+        }
+    }
+
     virtual ~Object() = default;
 };
 

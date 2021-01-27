@@ -93,7 +93,7 @@ public:
     Light(Point Position, Color c, float size) : Position(Position), color(c), Size(size)
     { }
 
-    [[nodiscard]] virtual Color computeSpecularPhongAt(const Hit& hit_point, const Material& material) const {
+    [[nodiscard]] virtual Color computeSpecularPhongAt(const Hit& hit_point, const Material& material, double specularValueOnHit) const {
         Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
         ray_reflection.normalize();
         Vector lightIncidence = Position - hit_point.Position;
@@ -103,7 +103,7 @@ public:
         if (specularFactor < 0){
             specularFactor = 0;
         }
-        Color specularColor = color * material.ks * pow(specularFactor,material.n);
+        Color specularColor = color * specularValueOnHit * pow(specularFactor,material.n);
 
         return specularColor;
 
@@ -147,7 +147,7 @@ public:
         return diffuseColor; // + specular;
     }
 
-    [[nodiscard]] virtual Color computeSpecularGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
+    [[nodiscard]] virtual Color computeSpecularGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit, double specularValueOnHit) const {
         Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
         ray_reflection.normalize();
         Vector lightIncidence = Position - hit_point.Position;
@@ -157,7 +157,7 @@ public:
         if (specularFactor < 0) {
             specularFactor = 0;
         }
-        Color specularColor = color * material.ks * pow(specularFactor,material.n);
+        Color specularColor = color * specularValueOnHit * pow(specularFactor,material.n);
 
         return specularColor;
     }

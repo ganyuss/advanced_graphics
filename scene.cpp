@@ -283,6 +283,7 @@ Color Scene::computePhong(const Hit& current_hit, Scene::IlluminationType illumi
 
     Color output{};
     Color colorOnHit = object_hit->getColorOnPosition(current_hit.Position);
+    double specularOnHit = object_hit->getSpecularOnPosition(current_hit.Position);
 
     if (illumination & ambient)
         output += colorOnHit * object_hit->material.ka;
@@ -297,7 +298,7 @@ Color Scene::computePhong(const Hit& current_hit, Scene::IlluminationType illumi
                     output += lightFactor *
                             light_source->computeDiffusePhongAt(current_hit, object_hit->material, colorOnHit);
                 if (illumination & specular)
-                    output += lightFactor * light_source->computeSpecularPhongAt(current_hit, object_hit->material);
+                    output += lightFactor * light_source->computeSpecularPhongAt(current_hit, object_hit->material, specularOnHit);
             }
         }
     }
@@ -308,13 +309,14 @@ Color Scene::computePhong(const Hit& current_hit, Scene::IlluminationType illumi
 Color Scene::computeGooch(const Hit &current_hit, Scene::IlluminationType illumination, const std::unique_ptr<Object> &object_hit) {
     Color output{};
     Color colorOnHit = object_hit->getColorOnPosition(current_hit.Position);
+    double specularOnHit = object_hit->getSpecularOnPosition(current_hit.Position);
 
     if (illumination & diffuse || illumination & specular) {
         for (std::unique_ptr<Light> &light_source : lights) {
             if (illumination & diffuse)
                 output += light_source->computeDiffuseGoochAt(current_hit, object_hit->material, colorOnHit, goochIlluminationModel);
             if (illumination & specular)
-                output += light_source->computeSpecularGoochAt(current_hit, object_hit->material, colorOnHit);
+                output += light_source->computeSpecularGoochAt(current_hit, object_hit->material, colorOnHit, specularOnHit);
         }
     }
 

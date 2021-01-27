@@ -136,6 +136,7 @@ bool tryRead<Material>(const YAML::Node &node, Material &variable, const Materia
     bool everythingOK = true;
 
     std::string texture;
+    std::string specularMap;
     if (tryRead(node, "texture", texture)) {
         variable.texture = Image(texture.c_str());
         if (variable.texture.value().size() == 0)
@@ -145,15 +146,27 @@ bool tryRead<Material>(const YAML::Node &node, Material &variable, const Materia
         everythingOK = tryRead(node, "color", variable.color, defaultValue.color);
     }
 
+    if (tryRead(node, "specularMap", specularMap)) {
+        variable.specularMap = Image(specularMap.c_str());
+        if (variable.specularMap.value().size() == 0)
+            throw std::runtime_error("File not found: " + texture);
+    }
+    else {
+        everythingOK = everythingOK && tryRead(node, "ks", variable.ks, defaultValue.ks);
+    }
+
+
 
     everythingOK = everythingOK
             && tryRead(node, "ka", variable.ka, defaultValue.ka)
             && tryRead(node, "kd", variable.kd, defaultValue.kd)
-            && tryRead(node, "ks", variable.ks, defaultValue.ks)
             && tryRead(node, "n", variable.n, defaultValue.n);
 
     tryRead(node, "index", variable.index, 1.);
     tryRead(node, "type", variable.type, MaterialType::DEFAULT);
+
+    if (! everythingOK)
+        variable = defaultValue;
 
     return everythingOK;
 }
