@@ -113,8 +113,8 @@ void Scene::render(Image &img)
     Color (*traceFunction)(Scene*, const Ray&) = nullptr;
 
     switch (mode) {
-        case Mode::PHONG:
         case Mode::GOOCH:
+        case Mode::PHONG:
             traceFunction = [] (Scene* scene, const Ray& ray) { return scene->trace(ray, scene->maxIterations); };
             break;
         case Mode::ZBUFFER:

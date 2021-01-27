@@ -12,28 +12,36 @@
 #  The example scene description should largely speak for itself. By now
 #  it should be clear that the #-character can be used to insert comments.
 
+RenderMode : PHONG
+
 Camera: # Possible position of moon (although I haven't checked whether it's on the right orbit)
-    eye: [192201.5,0,149264987] #[384403,0,149597890] rotated 60 degrees into the sun
-    center: [0,0,149597890]
-    up: [0,40,0]
+    eye: [0,0, 5000] #eye: [192201.5,0,149264987] #[384403,0,149597890] rotated 60 degrees into the sun
+    center: [0,0,0] #center: [0,0,149597890]
+    up: [0,1,0] #up: [0,40,0]
     viewSize: [400,400]
 
-Shadows: true
+DistMin: 0
+DistMax: 10000
+SoftShadows: Off
+MaxIterations: 3
 SuperSampling:
-  factor: 4
+  factor: 1
 
 Lights:
-- position: [0,0,0]
+- position: [0,0,4000]
   color: [1.5,1.0,1.5]
+  radius: 200
 
 Objects:
 - type: sphere
-  position: [0,0,149597890]
-  radius: [6378.1,[0,0.91740769935748826377361893702175,-0.39794863130761038954479576746719]]
-  angle: -90
+  position: [0,0,0] #[0,0,149597890]
+  radius: 200 #[6378.1,[0,0.91740769935748826377361893702175,-0.39794863130761038954479576746719]]
+  quaternion: [1,1,1,0] #angle: -90
   material:
-    texture: bluegrid.png
+    texture: "D:/Cours/ET5/Advanced Graphics/earth.png"
     ka: 0.2
     kd: 0.7
     ks: 0.0
     n: 1
+    index: 1
+    type: reflection

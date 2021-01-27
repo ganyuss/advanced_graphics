@@ -63,7 +63,7 @@ std::array<double, 2> Sphere::getTextureCoordinatesFor(Point p) {
     constexpr double oneOverTwoPi = 1 / twoPi;
 
 
-    Point center = (p - Position)/Radius;
+    Point center = Rotation.applyRotation((p - Position)/Radius);
     double Y = -(center.Y() + 1) /2;
 
     Point centerOnXZ = center;

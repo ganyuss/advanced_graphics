@@ -13,17 +13,27 @@
 #  it should be clear that the #-character can be used to insert comments.
 
 RenderMode : PHONG
-Eye: [200,200,1000]
 
-DistMin : 0
-DistMax : 1000
-SoftShadows : On
+Camera:
+  eye: [0,0,1000]
+  center: [200,200,0]
+  up: [0,1,0]
+  viewSize: [800,400]
+
+DistMin: 0
+DistMax: 10000
+SoftShadows: Off
 MaxIterations: 3
+SuperSampling:
+  factor: 1
 
 Lights:
-- position: [-200,600,1500]
-  color: [1.0,1.0,1.0]
-  size: 60
+  - position: [-200,600,1500]
+    color: [0.4,0.4,0.8]
+    size: 200
+  - position: [600,600,1500]
+    color: [0.8,0.8,0.4]
+    size: 200
 
 Objects:
 - type: sphere
@@ -81,3 +91,14 @@ Objects:
     n: 32
     index: 1
     type: reflection
+- type: sphere
+  position: [200,200,-1000]
+  radius: 1000
+  material: # grey
+    color: [0.4,0.4,0.4]
+    ka: 0.2
+    kd: 0.8
+    ks: 0
+    n: 1
+    index: 1
+    type: default

@@ -20,6 +20,7 @@
 #include "triple.h"
 #include "material.h"
 #include <array>
+#include "Quaternion.h"
 
 class Hit;
 class Ray;

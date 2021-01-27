@@ -25,13 +25,16 @@ public:
     void normalize();
     [[nodiscard]] Quaternion normalized() const;
     [[nodiscard]] Quaternion conjugate() const;
+    [[nodiscard]] Quaternion inverse() const;
 
     explicit operator Vector() const;
 
-    Vector applyRotation(const Vector& input);
+    Vector applyRotation(const Vector& input) const;
 };
 
 Quaternion& operator*=(Quaternion&, const Quaternion&);
 Quaternion operator*(const Quaternion&, const Quaternion&);
+Quaternion operator*(double, const Quaternion&);
+Quaternion operator*(const Quaternion&, double);
 
 #endif //RAYTRACER_QUATERNION_H

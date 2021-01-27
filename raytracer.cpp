@@ -168,12 +168,15 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
     if (objectType == "sphere") {
         Point pos{};
         double r;
+        Quaternion quaternion;
 
         everythingOK = tryRead(node, "position", pos)
             && tryRead(node, "radius", r);
 
+        tryRead(node, "quaternion", quaternion, Quaternion(0,0,0,1));
+
         if (everythingOK)
-            variable = std::make_unique<Sphere>(pos, r);
+            variable = std::make_unique<Sphere>(pos, r, quaternion);
     }
     else if (objectType == "cone") {
         Point pos{};
@@ -206,6 +209,26 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
     return everythingOK;
 }
 
+template<>
+bool tryRead<Quaternion>(const YAML::Node &node, Quaternion& variable, const Quaternion& defaultValue){
+    if (node.size() != 4) {
+        variable = defaultValue;
+        return false;
+    }
+
+    try {
+        node[0] >> variable.x;
+        node[1] >> variable.y;
+        node[2] >> variable.z;
+        node[3] >> variable.w;
+    }
+    catch (YAML::Exception & e) {
+        variable = defaultValue;
+        return false;
+    }
+
+    return true;
+}
 template <>
 bool tryRead<std::unique_ptr<Light>>(const YAML::Node &node, std::unique_ptr<Light>& variable, const std::unique_ptr<Light>& defaultValueUnused)
 {
