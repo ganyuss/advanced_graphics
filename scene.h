@@ -20,11 +20,15 @@
 #include <vector>
 #include <memory>
 #include "triple.h"
-#include "light.h"
-#include "object.h"
 #include "image.h"
 #include "yaml/yaml.h"
 #include "commongeometry.h"
+#include "object.h"
+
+class Light;
+class Hit;
+class Ray;
+class Material;
 
 enum Mode {PHONG, GOOCH, ZBUFFER, NORMAL};
 void operator>>(const YAML::Node &node, Mode &mode);
@@ -47,6 +51,15 @@ struct Camera {
 void operator>>(const YAML::Node &node, Camera &camera);
 
 
+struct GoochIlluminationModel {
+    // Default values from original paper: http://artis.imag.fr/~Cyril.Soler/DEA/NonPhotoRealisticRendering/Papers/p447-gooch.pdf
+    double b = 0.4;
+    double y = 0.4;
+    double alpha = 0.2;
+    double beta = 0.6;
+};
+
+
 class Scene
 {
 private:
@@ -61,6 +74,7 @@ public:
     unsigned int superSamplingFactor;
     Camera camera;
     bool SoftShadows = false;
+    GoochIlluminationModel goochIlluminationModel;
 
     Color trace(const Ray &ray, int iterations);
     Color traceZBuf(const Ray &ray);

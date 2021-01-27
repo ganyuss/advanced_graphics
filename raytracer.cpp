@@ -207,7 +207,7 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
 }
 
 template <>
-bool tryRead(const YAML::Node &node, std::unique_ptr<Light>& variable, const std::unique_ptr<Light>& defaultValueUnused)
+bool tryRead<std::unique_ptr<Light>>(const YAML::Node &node, std::unique_ptr<Light>& variable, const std::unique_ptr<Light>& defaultValueUnused)
 {
     bool everythingOK;
 
@@ -223,6 +223,17 @@ bool tryRead(const YAML::Node &node, std::unique_ptr<Light>& variable, const std
         variable = std::make_unique<Light>(position, color, size);
 
     return everythingOK;
+}
+
+template <>
+bool tryRead<GoochIlluminationModel>(const YAML::Node &node, GoochIlluminationModel& variable, const GoochIlluminationModel& defaultValue) {
+
+    bool readB = tryRead(node, "b", variable.b, defaultValue.b);
+    bool readY = tryRead(node, "y", variable.y, defaultValue.y);
+    bool readAlpha = tryRead(node, "alpha", variable.alpha, defaultValue.alpha);
+    bool readBeta = tryRead(node, "beta", variable.beta, defaultValue.beta);
+
+    return readB && readY && readAlpha && readBeta;
 }
 
 template <typename VariableType>
@@ -273,6 +284,10 @@ bool Raytracer::readScene(const std::string& inputFilename)
             scene.setNear(distmin);
             scene.setFar(distmax);
             scene.SoftShadows = renderSoftShadows;
+
+            if (! tryRead(doc, "GoochParameters", scene.goochIlluminationModel) && mode == Mode::GOOCH) {
+                std::cerr << "Warning: problem reading the gooch model parameters, using the default values" << std::endl;
+            }
 
             Camera camera{};
 

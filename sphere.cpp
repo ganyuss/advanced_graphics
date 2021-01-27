@@ -15,8 +15,8 @@
 //
 
 #include "sphere.h"
-#include <iostream>
-#include <math.h>
+#include "light.h"
+#include <cmath>
 
 /************************** Sphere **********************************/
 

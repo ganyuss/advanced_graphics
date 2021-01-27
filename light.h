@@ -24,6 +24,7 @@
 #include "triple.h"
 #include "material.h"
 #include "commongeometry.h"
+#include "scene.h"
 
 
 class Ray
@@ -124,17 +125,18 @@ public:
 
     }
 
-    [[nodiscard]] virtual Color computeDiffuseGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
-        // source (adapted): https://rendermeapangolin.wordpress.com/2015/05/07/gooch-shading/
-        float a = 0.3;
-        float b = 0.6;
+    [[nodiscard]] virtual Color computeDiffuseGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit, GoochIlluminationModel illuminationModel) const {
+        // source: http://artis.imag.fr/~Cyril.Soler/DEA/NonPhotoRealisticRendering/Papers/p447-gooch.pdf
+
+        Color kCool = Color{0, 0, illuminationModel.b} + illuminationModel.alpha * material.kd * colorOnHit;
+        Color kWarm = Color{illuminationModel.y, illuminationModel.y, 0} + illuminationModel.beta * material.kd * colorOnHit;
 
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();
         double diffuseFactor = hit_point.Normal.dot(lightIncidence);
         diffuseFactor = (diffuseFactor + 1) / 2;
-        Color diffuseColor = (1 - diffuseFactor) * (Color{0, 0, a})
-                        + diffuseFactor * b * (color * colorOnHit * material.kd);
+        Color diffuseColor = (1 - diffuseFactor) * (kCool)
+                        + diffuseFactor * kWarm;
 
         // Highlights
         Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);

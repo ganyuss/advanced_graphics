@@ -18,6 +18,9 @@
 #include <functional>
 #include <stdexcept>
 #include "scene.h"
+#include "object.h"
+#include "light.h"
+#include <vector>
 #include <cmath>
 #include <cassert>
 
@@ -309,7 +312,7 @@ Color Scene::computeGooch(const Hit &current_hit, Scene::IlluminationType illumi
     if (illumination & diffuse || illumination & specular) {
         for (std::unique_ptr<Light> &light_source : lights) {
             if (illumination & diffuse)
-                output += light_source->computeDiffuseGoochAt(current_hit, object_hit->material, colorOnHit);
+                output += light_source->computeDiffuseGoochAt(current_hit, object_hit->material, colorOnHit, goochIlluminationModel);
             if (illumination & specular)
                 output += light_source->computeSpecularGoochAt(current_hit, object_hit->material, colorOnHit);
         }

@@ -18,9 +18,11 @@
 #define OBJECT_H_AXKLE0OF
 
 #include "triple.h"
-#include "light.h"
 #include "material.h"
 #include <array>
+
+class Hit;
+class Ray;
 
 class Object {
 public:
