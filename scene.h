@@ -76,6 +76,8 @@ public:
     bool SoftShadows = false;
     GoochIlluminationModel goochIlluminationModel;
 
+    unsigned int shadowEdgePrecision, shadowShadePrecision;
+
     Color trace(const Ray &ray, int iterations);
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);

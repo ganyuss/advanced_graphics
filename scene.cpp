@@ -199,8 +199,8 @@ std::unique_ptr<Object>& Scene::getObjectHitBy(const Ray& ray, const std::unique
 
 float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& hit, const std::unique_ptr<Object> &object_hit) {
 
-    const int lightSampleNumber = 16;
-    const int lightSubSampleNumber = lightSampleNumber / 2;
+    int lightSampleNumber = static_cast<int>(shadowEdgePrecision * shadowEdgePrecision);
+    int lightSubSampleNumber = static_cast<int>(shadowShadePrecision);
 
     Vector positionToLight = (light->Position - hit.Position).normalized();
 

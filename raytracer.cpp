@@ -348,6 +348,16 @@ bool Raytracer::readScene(const std::string& inputFilename)
                 scene.superSamplingFactor = 1;
             }
 
+            try {
+                const YAML::Node& n = doc["SoftShadowsPrecision"];
+                tryRead<unsigned int>(n, "edge", scene.shadowEdgePrecision, 2);
+                tryRead<unsigned int>(n, "shade", scene.shadowShadePrecision, 3);
+            }
+            catch (YAML::Exception & e) {
+                scene.shadowEdgePrecision = 2;
+                scene.shadowShadePrecision = 3;
+            }
+
 
 
             // Read and parse the scene objects
