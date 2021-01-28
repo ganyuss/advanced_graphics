@@ -18,6 +18,8 @@ Hit Cone::intersect(const Ray &ray) {
         if (hitDistance > slopeHit.Distance)
             return slopeHit;
 
+        // applying normal map
+        planHit.Normal = applyNormalMap(planHit.Position, planHit.Normal, Side);
         return planHit;
     }
 
@@ -27,9 +29,12 @@ Hit Cone::intersect(const Ray &ray) {
 Vector Cone::getNormalAt(const Point &p) {
 
     Point Tip = (Position + Up);
-    Vector NormalDirection = rotateAround(p - Tip, getThirdOrthogonalVector(Up, p - Tip), 90);
+    Vector NormalDirection = rotateAround(p - Tip, getThirdOrthogonalVector(Up, p - Tip), 90)
+            .normalized();
 
-    return (NormalDirection).normalized();
+    Vector normalUp = Plane{p, NormalDirection}.projectOn(Vector{0, 1, 0});
+    Vector normal = applyNormalMap(p, NormalDirection, normalUp);
+    return normal;
 }
 
 bool Cone::isInShadowCone(const Point &p) {
@@ -106,6 +111,50 @@ Hit Cone::getHitOnSlope(const Ray& ray) {
     }
 }
 
-std::array<double, 2> Cone::getTextureCoordinatesFor(Point) {
-    return {0, 0};
+std::array<double, 2> Cone::getTextureCoordinatesFor(const Point &point) {
+
+    if (isOnDisk(point)) {
+        static Vector sideDirection = getThirdOrthogonalVector(Side, Up).normalized();
+
+        Vector centerToPoint = point - Position;
+        Vector upComponent = project(centerToPoint, Side);
+        Vector sideComponent = centerToPoint - upComponent;
+        double upValue = upComponent.norm() / Radius;
+        double sideValue = sideComponent.norm() / Radius;
+
+        if (sideDirection.dot(sideComponent) < 0)
+            sideValue = - sideValue;
+        if (Side.dot(upComponent) < 0)
+            upValue = - upValue;
+
+        return {(sideValue+1)/2, (upValue+1)/4 };
+    }
+    else {
+        constexpr double twoPi = M_PI * 2;
+        constexpr double oneOverTwoPi = 1 / twoPi;
+
+        double Y = project(point, Up).norm() / Up.norm();
+
+        Point pointOnDisk = DiskPlan.projectOn(point);
+        pointOnDisk.normalize();
+        Vector pointOnDiskXComponent = project(pointOnDisk, Side);
+        Vector pointOnDiskZComponent = pointOnDisk - pointOnDiskXComponent;
+
+        static Vector pointOnDiskZDirection = getThirdOrthogonalVector(Side, Up).normalized();
+
+        double pointTheta;
+
+        if (pointOnDiskZDirection.dot(pointOnDiskZComponent) > 0)
+            pointTheta = twoPi - std::acos(pointOnDiskXComponent.norm());
+        else
+            pointTheta = std::acos(pointOnDiskXComponent.norm());
+
+        double X = pointTheta * oneOverTwoPi;
+        return {X, Y / 2};
+    }
+}
+
+bool Cone::isOnDisk(const Point& point) {
+    Vector centerToPoint = point - Position;
+    return DiskPlan.projectOn(centerToPoint) == centerToPoint;
 }

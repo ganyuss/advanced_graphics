@@ -61,7 +61,7 @@ Hit Sphere::intersect(const Ray &ray)
     return {distanceToOrigin, intersectionPoint, normal, ray};
 }
 
-std::array<double, 2> Sphere::getTextureCoordinatesFor(Point p) {
+std::array<double, 2> Sphere::getTextureCoordinatesFor(const Point &p) {
     constexpr double twoPi = M_PI * 2;
     constexpr double oneOverTwoPi = 1 / twoPi;
 

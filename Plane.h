@@ -17,7 +17,7 @@ public:
     { }
 
     Hit intersect(const Ray &ray) override;
-    std::array<double, 2> getTextureCoordinatesFor(Point) override;
+    std::array<double, 2> getTextureCoordinatesFor(const Point &) override;
 
     Vector projectOn(const Vector &);
 

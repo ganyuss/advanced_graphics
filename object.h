@@ -31,7 +31,7 @@ public:
     Material material;
 
     virtual Hit intersect(const Ray &ray) = 0;
-    virtual std::array<double, 2> getTextureCoordinatesFor(Point) = 0;
+    virtual std::array<double, 2> getTextureCoordinatesFor(const Point &) = 0;
 
     inline Color getColorOnPosition(const Point& position) {
         if (material.texture.has_value()) {

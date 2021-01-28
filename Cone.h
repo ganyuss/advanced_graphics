@@ -13,17 +13,18 @@
 
 class Cone : public Object {
 public:
-    Cone(Point Position, double Radius, Vector Up) :
-        Position(Position), Radius(Radius), Up(Up),
-        theta(std::atan(Radius / Up.norm())), cosSquaredTheta(std::pow(std::cos(theta), 2)),
+    Cone(Point Position, Vector Side, Vector Up) :
+        Position(Position), Side(Side), Up(Up), Radius(Side.norm()),
+        theta(std::atan(Side.norm() / Up.norm())), cosSquaredTheta(std::pow(std::cos(theta), 2)),
         v(-Up.normalized()),
         DiskPlan(Position, Up)
     { }
 
     Hit intersect(const Ray &ray) override;
-    std::array<double, 2> getTextureCoordinatesFor(Point) override;
+    std::array<double, 2> getTextureCoordinatesFor(const Point &point) override;
 
     const Point Position;
+    const Vector Side;
     const double Radius;
     const Vector Up;
 
@@ -33,6 +34,8 @@ private:
     bool isInShadowCone(const Point&);
 
     Hit getHitOnSlope(const Ray&);
+
+    bool isOnDisk(const Point&);
 
     // Used in the intersect calculations
     const double theta;

@@ -26,7 +26,7 @@ public:
     Sphere(Point Position,double Radius, Quaternion Rotation = Quaternion(0,0,0,1)) : Position(Position), Radius(Radius), Rotation(Rotation.normalized()) { }
 
     Hit intersect(const Ray &ray) override;
-    std::array<double, 2> getTextureCoordinatesFor(Point p) override;
+    std::array<double, 2> getTextureCoordinatesFor(const Point &p) override;
 
     const Point Position;
     const double Radius;
