@@ -28,6 +28,7 @@ struct Material
     Color color;
     std::optional<Image> texture;
     std::optional<Image> specularMap;
+    std::optional<Image> normalMap;
 
 
     double ka;          // ambient intensity

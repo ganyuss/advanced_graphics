@@ -16,6 +16,7 @@
 
 #include "sphere.h"
 #include "light.h"
+#include "Plane.h"
 #include <cmath>
 
 /************************** Sphere **********************************/
@@ -54,6 +55,8 @@ Hit Sphere::intersect(const Ray &ray)
     // Normal calculation
     Point intersectionPoint = ray.at(distanceToOrigin);
     Vector normal = (-Position + intersectionPoint).normalized();
+    Vector normalUp = Plane{intersectionPoint, normal}.projectOn(Vector{0, 1, 0});
+    normal = applyNormalMap(intersectionPoint, normal, normalUp);
 
     return {distanceToOrigin, intersectionPoint, normal, ray};
 }

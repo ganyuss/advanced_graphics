@@ -58,7 +58,7 @@ public:
     Ray Source;
 
     Hit(double Distance, Point Position, Vector Normal, Ray Source)
-            : Distance(Distance), Position(Position), Normal(Normal), Source(Source)
+            : Distance(Distance), Position(Position), Normal(Normal.normalized()), Source(Source)
     { }
 
     static const Hit& NO_HIT() {
@@ -111,11 +111,13 @@ public:
 
     [[nodiscard]] virtual Color computeDiffusePhongAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
 
+        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
+        ray_reflection.normalize();
         Vector lightIncidence = Position - hit_point.Position;
         lightIncidence.normalize();
         double diffuseFactor = hit_point.Normal.dot(lightIncidence);
         Color diffuseColor{};
-        if (diffuseFactor <= 0){
+        if (diffuseFactor <= 0) {
             diffuseColor.set(0,0,0);
         }else {
             diffuseColor = color * colorOnHit * material.kd * diffuseFactor;

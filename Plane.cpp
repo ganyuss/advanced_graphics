@@ -26,3 +26,7 @@ Hit Plane::intersect(const Ray &ray) {
 std::array<double, 2> Plane::getTextureCoordinatesFor(Point) {
     return {0, 0};
 }
+
+Vector Plane::projectOn(const Vector& v) {
+    return v - project(v, Normal);
+}

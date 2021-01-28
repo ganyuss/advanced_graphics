@@ -21,6 +21,7 @@
 #include "material.h"
 #include <array>
 #include "Quaternion.h"
+#include "commongeometry.h"
 
 class Hit;
 class Ray;
@@ -49,6 +50,23 @@ public:
         }
         else {
             return material.ks;
+        }
+    }
+
+    inline Vector applyNormalMap(const Point& position, const Vector& normal, const Vector& up) {
+        if (material.normalMap.has_value()) {
+            std::array<double, 2> uv = getTextureCoordinatesFor(position);
+            Vector left = getThirdOrthogonalVector(up, normal).normalized();
+            Vector normalComponents = Vector{material.normalMap.value().colorAt(uv[0], uv[1])};
+            normalComponents = normalComponents * 2 - 1; // converting to vector to bypass overflow prevention
+            return (
+                    left.normalized() * normalComponents.X()
+                    + up.normalized() * normalComponents.Y()
+                    + normal.normalized() * normalComponents.Z()
+                ).normalized();
+        }
+        else {
+            return normal;
         }
     }
 

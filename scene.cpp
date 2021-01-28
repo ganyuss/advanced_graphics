@@ -185,16 +185,33 @@ std::unique_ptr<Object>& Scene::getObjectHitBy(const Ray& ray) {
     return *hit_iterator;
 }
 
-float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& hit) {
+std::unique_ptr<Object>& Scene::getObjectHitBy(const Ray& ray, const std::unique_ptr<Object> &object_ignored) {
+    auto hit_iterator = optimized_min_element(
+            std::begin(objects), std::end(objects),
+            [&ray, &object_ignored](const std::unique_ptr<Object>& o) {
+                if (o == object_ignored) return Hit::NO_HIT().Distance;
+                return o->intersect(ray).Distance;
+            }
+    );
+
+    return *hit_iterator;
+}
+
+float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& hit, const std::unique_ptr<Object> &object_hit) {
 
     const int lightSampleNumber = 16;
     const int lightSubSampleNumber = lightSampleNumber / 2;
 
-    Vector dPosition = hit.Position + hit.Normal * 0.1;
-    Ray newRay = Ray(dPosition, light->Position - dPosition);
+    Vector positionToLight = (light->Position - hit.Position).normalized();
 
-    std::unique_ptr<Object>& newObject = getObjectHitBy(newRay);
+    Vector dPosition = hit.Position + positionToLight * 0.1;
+    Ray newRay = Ray(dPosition, positionToLight);
+
+    std::unique_ptr<Object>& newObject = getObjectHitBy(newRay, object_hit);
     Hit current_hit_new = newObject->intersect(newRay);
+
+    if (object_hit == newObject)
+        current_hit_new = Hit::NO_HIT();
 
     if ((! SoftShadows) || light->Size == 0) {
         return current_hit_new.Distance >= (light->Position - dPosition).norm() ? 1 : 0;
@@ -291,7 +308,7 @@ Color Scene::computePhong(const Hit& current_hit, Scene::IlluminationType illumi
     if (illumination & diffuse || illumination & specular) {
         for (std::unique_ptr<Light> &light_source : lights) {
 
-            float lightFactor = getLightFactorFor(light_source, current_hit);
+            float lightFactor = getLightFactorFor(light_source, current_hit, object_hit);
 
             if (lightFactor > 0) {
                 if (illumination & diffuse)

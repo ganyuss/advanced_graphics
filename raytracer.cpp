@@ -137,6 +137,7 @@ bool tryRead<Material>(const YAML::Node &node, Material &variable, const Materia
 
     std::string texture;
     std::string specularMap;
+    std::string normalMap;
     if (tryRead(node, "texture", texture)) {
         variable.texture = Image(texture.c_str());
         if (variable.texture.value().size() == 0)
@@ -155,6 +156,10 @@ bool tryRead<Material>(const YAML::Node &node, Material &variable, const Materia
         everythingOK = everythingOK && tryRead(node, "ks", variable.ks, defaultValue.ks);
     }
 
+    if (tryRead(node, "normalMap", normalMap)) {
+        variable.normalMap = Image(normalMap.c_str());
+
+    }
 
 
     everythingOK = everythingOK

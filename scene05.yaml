@@ -1,0 +1,32 @@
+RenderMode : PHONG
+Eye: [200,200,1000]
+
+DistMin : -200
+DistMax : 1000
+SoftShadows: Off
+MaxIterations: 3
+
+Lights:
+  - position: [-1000,600,500]
+    color: [1.0,1.0,1.0]
+    size: 80
+  - position: [ 2000,1500,-200 ]
+    color: [ 1.0,1.0,1.0 ]
+    size: 80
+  - position: [ -100,-100,400 ]
+    color: [ 1.0,1.0,1.0 ]
+    size: 80
+
+Objects:
+  - type: sphere
+    position: [200,200,0]
+    radius: 100
+    material:
+      texture: ../broken_wall.png
+      ka: 0.2
+      kd: 0.8
+      ks: 0.5
+      normalMap: ../broken_wall_normal.png
+      n: 64
+      index: 1
+      type: default

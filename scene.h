@@ -92,14 +92,15 @@ public:
 
 private:
     std::unique_ptr<Object>& getObjectHitBy(const Ray&);
-    float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit);
+    std::unique_ptr<Object>& getObjectHitBy(const Ray&, const std::unique_ptr<Object> &object_ignored);
+    float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit, const std::unique_ptr<Object> &object_hit);
 
     typedef unsigned char IlluminationType;
 
-    IlluminationType ambient = 0x01;
-    IlluminationType diffuse = 0x02;
-    IlluminationType specular = 0x04;
-    IlluminationType all = ambient | diffuse | specular;
+    const IlluminationType ambient = 0x01;
+    const IlluminationType diffuse = 0x02;
+    const IlluminationType specular = 0x04;
+    const IlluminationType all = ambient | diffuse | specular;
 
     Color computeReflection(const Hit &, const Material &, int iterations);
     Color computeRefraction(const Hit &current_hit, const Material &, int iterations);
