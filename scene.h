@@ -30,8 +30,7 @@ class Hit;
 class Ray;
 class Material;
 
-enum Mode {PHONG, GOOCH, ZBUFFER, NORMAL};
-void operator>>(const YAML::Node &node, Mode &mode);
+enum Mode {PHONG, GOOCH, ZBUFFER, NORMAL, TEXTURE};
 
 struct Camera {
     Point Eye;
@@ -48,7 +47,6 @@ struct Camera {
         return Center - Eye + directionComponentX + directionComponentY;
     }
 };
-void operator>>(const YAML::Node &node, Camera &camera);
 
 
 struct GoochIlluminationModel {
@@ -81,6 +79,7 @@ public:
     Color trace(const Ray &ray, int iterations);
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);
+    Color traceTextures(const Ray &ray);
     void render(Image &img);
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);

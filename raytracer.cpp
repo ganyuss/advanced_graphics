@@ -38,7 +38,7 @@ bool tryRead<Mode>(const YAML::Node &node, Mode &variable, const Mode& defaultVa
     try {
         auto modeString = node.Read<std::string>();
 
-        std::map<std::string, Mode> map{{"ZBUFFER", Mode::ZBUFFER}, {"PHONG", Mode::PHONG}, {"GOOCH", Mode::GOOCH}, {"NORMAL", Mode::NORMAL}};
+        std::map<std::string, Mode> map{{"ZBUFFER", Mode::ZBUFFER}, {"PHONG", Mode::PHONG}, {"GOOCH", Mode::GOOCH}, {"NORMAL", Mode::NORMAL}, {"TEXTURE", Mode::TEXTURE}};
         if (map.find(modeString) != map.end())
             variable = map[modeString];
         else

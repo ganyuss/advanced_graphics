@@ -108,6 +108,25 @@ Color Scene::traceNormals(const Ray &ray)
     return output;
 }
 
+Color Scene::traceTextures(const Ray &ray)
+{
+    auto hit_iterator = optimized_min_element(
+            std::begin(objects), std::end(objects),
+            [&ray](const std::unique_ptr<Object>& o) { return Hit(o->intersect(ray)).Distance; }
+    );
+
+    // No hit? Return background color.
+    Hit current_hit = (*hit_iterator)->intersect(ray);
+    if (current_hit == Hit::NO_HIT()) return Color(0.0, 0.0, 0.0);
+
+    std::unique_ptr<Object>& obj = *hit_iterator;
+
+    auto uv = obj->getTextureCoordinatesFor(current_hit.Position);
+
+
+    return Color{uv[0], uv[1], 0};
+}
+
 void Scene::render(Image &img)
 {
     Color (*traceFunction)(Scene*, const Ray&) = nullptr;
@@ -122,6 +141,9 @@ void Scene::render(Image &img)
             break;
         case Mode::NORMAL:
             traceFunction = [] (Scene* scene, const Ray& ray) { return scene->traceNormals(ray); };
+            break;
+        case Mode::TEXTURE:
+            traceFunction = [] (Scene* scene, const Ray& ray) { return scene->traceTextures(ray); };
             break;
     }
 
