@@ -5,7 +5,7 @@
 #include "Plane.h"
 #include "commongeometry.h"
 
-Hit Plane::intersect(const Ray &ray) {
+Hit Plane::intersect(const Ray &ray) const {
     Vector rayOrthogonal = project(ray.Direction, Normal);
 
     Vector shortestPath = project(Origin - ray.Origin, Normal);
@@ -23,10 +23,10 @@ Hit Plane::intersect(const Ray &ray) {
         );
 }
 
-std::array<double, 2> Plane::getTextureCoordinatesFor(const Point &) {
+std::array<double, 2> Plane::getTextureCoordinatesFor(const Point &) const {
     return {0, 0};
 }
 
-Vector Plane::projectOn(const Vector& v) {
+Vector Plane::projectOn(const Vector& v) const {
     return v - project(v, Normal);
 }

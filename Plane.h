@@ -16,10 +16,10 @@ public:
             Origin(Origin), Normal(Normal)
     { }
 
-    Hit intersect(const Ray &ray) override;
-    std::array<double, 2> getTextureCoordinatesFor(const Point &) override;
+    [[nodiscard]] Hit intersect(const Ray &ray) const override;
+    [[nodiscard]] std::array<double, 2> getTextureCoordinatesFor(const Point &) const override;
 
-    Vector projectOn(const Vector &);
+    [[nodiscard]] Vector projectOn(const Vector &) const;
 
 private:
 

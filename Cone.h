@@ -14,14 +14,13 @@
 class Cone : public Object {
 public:
     Cone(Point Position, Vector Side, Vector Up) :
-        Position(Position), Side(Side), Up(Up), Radius(Side.norm()),
+        Position(Position), Up(Up), DiskPlan(Position, Up), Side(Plane{Position, Up}.projectOn(Side)), Radius(Side.norm()),
         theta(std::atan(Side.norm() / Up.norm())), cosSquaredTheta(std::pow(std::cos(theta), 2)),
-        v(-Up.normalized()),
-        DiskPlan(Position, Up)
+        v(-Up.normalized())
     { }
 
-    Hit intersect(const Ray &ray) override;
-    std::array<double, 2> getTextureCoordinatesFor(const Point &point) override;
+    [[nodiscard]] Hit intersect(const Ray &ray) const override;
+    [[nodiscard]] std::array<double, 2> getTextureCoordinatesFor(const Point &point) const override;
 
     const Point Position;
     const Vector Side;
@@ -30,18 +29,18 @@ public:
 
 private:
 
-    Vector getNormalAt(const Point&);
-    bool isInShadowCone(const Point&);
+    [[nodiscard]] Vector getNormalAt(const Point&) const;
+    [[nodiscard]] bool isInShadowCone(const Point&) const;
 
-    Hit getHitOnSlope(const Ray&);
+    [[nodiscard]] Hit getHitOnSlope(const Ray&) const;
 
-    bool isOnDisk(const Point&);
+    [[nodiscard]] bool isOnDisk(const Point&) const;
 
     // Used in the intersect calculations
     const double theta;
     const double cosSquaredTheta;
     const Vector v;
-    Plane DiskPlan; // Can't be const because Object::intersect isn't const
+    const Plane DiskPlan;
 };
 
 

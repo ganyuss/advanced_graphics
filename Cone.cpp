@@ -6,7 +6,7 @@
 #include "commongeometry.h"
 #include <cmath>
 
-Hit Cone::intersect(const Ray &ray) {
+Hit Cone::intersect(const Ray &ray) const {
 
     Hit slopeHit = getHitOnSlope(ray);
 
@@ -26,7 +26,7 @@ Hit Cone::intersect(const Ray &ray) {
     return slopeHit;
 }
 
-Vector Cone::getNormalAt(const Point &p) {
+Vector Cone::getNormalAt(const Point &p) const {
 
     Point Tip = (Position + Up);
     Vector NormalDirection = rotateAround(p - Tip, getThirdOrthogonalVector(Up, p - Tip), 90)
@@ -37,7 +37,7 @@ Vector Cone::getNormalAt(const Point &p) {
     return normal;
 }
 
-bool Cone::isInShadowCone(const Point &p) {
+bool Cone::isInShadowCone(const Point &p) const {
 
     Vector baseToP = p - Position;
     Vector TipToP = p - (Position + Up);
@@ -46,7 +46,7 @@ bool Cone::isInShadowCone(const Point &p) {
             || TipToP.dot(-Up) < 0;
 }
 
-Hit Cone::getHitOnSlope(const Ray& ray) {
+Hit Cone::getHitOnSlope(const Ray& ray) const {
     // source: http://lousodrome.net/blog/light/2017/01/03/intersection-of-a-ray-and-a-cone/
     // Could be optimized, especially with the computation that is not function of the ray
     Vector co = Vector(ray.Origin - (Position + Up));
@@ -111,7 +111,7 @@ Hit Cone::getHitOnSlope(const Ray& ray) {
     }
 }
 
-std::array<double, 2> Cone::getTextureCoordinatesFor(const Point &point) {
+std::array<double, 2> Cone::getTextureCoordinatesFor(const Point &point) const {
 
     if (isOnDisk(point)) {
         static Vector sideDirection = getThirdOrthogonalVector(Side, Up).normalized();
@@ -154,7 +154,7 @@ std::array<double, 2> Cone::getTextureCoordinatesFor(const Point &point) {
     }
 }
 
-bool Cone::isOnDisk(const Point& point) {
+bool Cone::isOnDisk(const Point& point) const {
     Vector centerToPoint = point - Position;
     return DiskPlan.projectOn(centerToPoint) == centerToPoint;
 }

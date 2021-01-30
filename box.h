@@ -11,7 +11,7 @@ class Box : public Object {
 public:
     Box(Point Position, float width, float depth, float height) : Position(Position), width(width), depth(depth), height(height)  { }
 
-    Hit intersect(const Ray &ray) override;
+    Hit intersect(const Ray &ray) const override;
 
     const Point Position;
     const float width;

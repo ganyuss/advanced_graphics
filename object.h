@@ -30,10 +30,10 @@ class Object {
 public:
     Material material;
 
-    virtual Hit intersect(const Ray &ray) = 0;
-    virtual std::array<double, 2> getTextureCoordinatesFor(const Point &) = 0;
+    [[nodiscard]] virtual Hit intersect(const Ray &ray) const = 0;
+    [[nodiscard]] virtual std::array<double, 2> getTextureCoordinatesFor(const Point &) const = 0;
 
-    inline Color getColorOnPosition(const Point& position) {
+    [[nodiscard]] inline Color getColorOnPosition(const Point& position) const {
         if (material.texture.has_value()) {
             std::array<double, 2> uv = getTextureCoordinatesFor(position);
             return material.texture.value().colorAt(uv[0], uv[1]);
@@ -43,7 +43,7 @@ public:
         }
     }
 
-    inline double getSpecularOnPosition(const Point& position) {
+    [[nodiscard]] inline double getSpecularOnPosition(const Point& position) const {
         if (material.specularMap.has_value()) {
             std::array<double, 2> uv = getTextureCoordinatesFor(position);
             return material.specularMap.value().colorAt(uv[0], uv[1]).Red(); // Reading the red channel here, doesn't matter
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    inline Vector applyNormalMap(const Point& position, const Vector& normal, const Vector& up) {
+    [[nodiscard]] inline Vector applyNormalMap(const Point& position, const Vector& normal, const Vector& up) const {
         if (material.normalMap.has_value()) {
             std::array<double, 2> uv = getTextureCoordinatesFor(position);
             Vector left = getThirdOrthogonalVector(up, normal).normalized();
