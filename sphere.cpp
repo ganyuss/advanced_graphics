@@ -21,7 +21,7 @@
 
 /************************** Sphere **********************************/
 
-Hit Sphere::intersect(const Ray &ray)
+Hit Sphere::intersect(const Ray &ray) const
 {
     // Intersection point calculation
     // source: https://fiftylinesofcode.com/ray-sphere-intersection/
@@ -61,7 +61,7 @@ Hit Sphere::intersect(const Ray &ray)
     return {distanceToOrigin, intersectionPoint, normal, ray};
 }
 
-std::array<double, 2> Sphere::getTextureCoordinatesFor(const Point &p) {
+std::array<double, 2> Sphere::getTextureCoordinatesFor(const Point &p) const {
     constexpr double twoPi = M_PI * 2;
     constexpr double oneOverTwoPi = 1 / twoPi;
 
