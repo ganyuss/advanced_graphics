@@ -6,6 +6,7 @@
 #define RAYTRACER_TRIANGLEAGGREGATE_H
 
 
+#include <utility>
 #include <vector>
 #include <unordered_set>
 #include "Triangle.h"
@@ -16,6 +17,10 @@ public:
 
     TriangleAggregate(std::initializer_list<Triangle> triangles)
             : triangles(triangles)
+    { }
+
+    TriangleAggregate(std::vector<Triangle>  triangles)
+            : triangles(std::move(triangles))
     { }
 
 
