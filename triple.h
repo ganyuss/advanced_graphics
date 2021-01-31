@@ -233,11 +233,12 @@ public:
         return (this->*methods[i])();
     }
 
-    double dot(const Vector& other) const;
-    Vector cross(const Vector& other) const;
-    inline double norm() const;
+    [[nodiscard]] double dot(const Vector& other) const;
+    [[nodiscard]] Vector cross(const Vector& other) const;
+    [[nodiscard]] inline double norm2() const  { return X()*X() + Y()*Y() + Z()*Z(); }
+    [[nodiscard]] inline double norm() const { return std::sqrt(norm2()); }
     void normalize();
-    Vector normalized() const;
+    [[nodiscard]] Vector normalized() const;
 
     iterator begin() { return iterator{*this}; }
     iterator end() { return iterator{*this} + 3; }
@@ -292,7 +293,31 @@ Triple& operator*=(Triple& t1, const Triple& t2) { for (int i = 0; i < 3; ++i) t
 template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
 Triple operator*(const Triple& t1, const Triple& t2) { Triple output{t1}; output *= t2; return output; }
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
-Triple operator/(Triple t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] /= n; return t1; }
+Triple& operator/=(Triple& t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] /= n; return t1; }
+template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
+Triple operator/(const Triple& t1, Number n) { return Triple{t1} /= n; }
+
+
+
+inline std::size_t hash_combine(std::size_t seed) { return seed; }
+
+template <typename T, typename... Rest>
+inline std::size_t hash_combine(std::size_t seed, const T& v, Rest... rest) {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    return hash_combine(seed, rest...);
+}
+
+namespace std
+{
+    template<> struct hash<Vector>
+    {
+        std::size_t operator()(Vector const& vector) const noexcept
+        {
+            return hash_combine<double>(0, vector[0], vector[1], vector[2]);
+        }
+    };
+}
 
 
 #endif /* end of include guard: TRIPLE_H_SEVQHPTA */

@@ -37,10 +37,6 @@ double Vector::dot(const Vector &other) const {
     return sum;
 }
 
-inline double Vector::norm() const {
-    return std::sqrt(X() * X() + Y() * Y() + Z() * Z());
-}
-
 void Vector::normalize() {
     double n = norm();
     for (double& direction : *this)
