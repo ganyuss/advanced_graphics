@@ -3,7 +3,6 @@
 #ifndef NODE_H_62B23520_7C8E_11DE_8A39_0800200C9A66
 #define NODE_H_62B23520_7C8E_11DE_8A39_0800200C9A66
 
-
 #include "conversion.h"
 #include "exceptions.h"
 #include "iterator.h"
@@ -31,7 +30,7 @@ namespace YAML
 		~Node();
 
 		void Clear();
-		std::auto_ptr<Node> Clone() const;
+		std::unique_ptr<Node>&& Clone() const;
 		void Parse(Scanner *pScanner, const ParserState& state);
 
 		CONTENT_TYPE GetType() const;
