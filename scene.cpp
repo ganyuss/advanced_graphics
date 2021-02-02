@@ -155,6 +155,7 @@ void Scene::render(Image &img)
     int h = img.height();
     double delta = 1.0 / (superSamplingFactor+1);
     unsigned int rayPerPixel = superSamplingFactor * superSamplingFactor;
+    #pragma omp parallel for default(none) shared(traceFunction, img, h, w, delta, rayPerPixel)
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             Color pixelColor{};
@@ -166,6 +167,7 @@ void Scene::render(Image &img)
                 }
             }
 
+            #pragma omp critical
             img(x, y) = pixelColor;
         }
     }
