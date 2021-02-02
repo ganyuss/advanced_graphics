@@ -16,6 +16,7 @@
 #define MATERIAL_H_TWMNT2EJ
 
 #include <iostream>
+#include <optional>
 #include "triple.h"
 #include "yaml/node.h"
 #include "image.h"

@@ -19,6 +19,10 @@
 #include "Plane.h"
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
+
 /************************** Sphere **********************************/
 
 Hit Sphere::intersect(const Ray &ray) const

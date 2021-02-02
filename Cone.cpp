@@ -6,6 +6,10 @@
 #include "commongeometry.h"
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
+
 Hit Cone::intersect(const Ray &ray) const {
 
     Hit slopeHit = getHitOnSlope(ray);
