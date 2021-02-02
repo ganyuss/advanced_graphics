@@ -4,7 +4,7 @@
 
 #include "TriangleAggregate.h"
 
-static std::unordered_map<Point, const Triangle&> parentOf{};
+std::unordered_map<Point, const Triangle&> TriangleAggregate::parentOf{};
 
 Sphere TriangleAggregate::computeCircumscribedSphere() const {
 
@@ -55,7 +55,7 @@ Hit TriangleAggregate::intersect(const Ray &ray) const {
     }
 
     if (finalHit != Hit::NO_HIT()) {
-        parentOf.insert(std::pair<Vector, const Triangle&>(finalHit.Position, triangles[triangleHitIndex]));
+        TriangleAggregate::parentOf.insert(std::pair<Vector, const Triangle&>(finalHit.Position, triangles[triangleHitIndex]));
         return finalHit;
     }
     else {
@@ -64,5 +64,5 @@ Hit TriangleAggregate::intersect(const Ray &ray) const {
 }
 
 std::array<double, 2> TriangleAggregate::getTextureCoordinatesFor(const Point &position) const {
-    return parentOf.at(position).getTextureCoordinatesFor(position);
+    return TriangleAggregate::parentOf.at(position).getTextureCoordinatesFor(position);
 }

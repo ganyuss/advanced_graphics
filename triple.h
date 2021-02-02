@@ -295,7 +295,7 @@ Triple operator*(const Triple& t1, const Triple& t2) { Triple output{t1}; output
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
 Triple& operator/=(Triple& t1, Number n) { for (int i = 0; i < 3; ++i) t1[i] /= n; return t1; }
 template <typename Triple, typename Number, class = typename std::enable_if<is_triple_v<Triple>, bool>::type, bool = std::is_arithmetic<Number>::value>
-Triple operator/(const Triple& t1, Number n) { return Triple{t1} /= n; }
+Triple operator/(Triple t1, Number n) { return t1 /= n; }
 
 
 
