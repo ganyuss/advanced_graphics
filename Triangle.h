@@ -19,9 +19,13 @@ struct Vertex {
         Normal(),
         UV()
     { }
+
+    Vertex(const Point& Position, const Vector& Normal, const std::array<double, 2> UV)
+        : Position(Position), Normal(Normal), UV(UV)
+    { }
 };
 
-class Triangle : Object {
+class Triangle : public Object {
 public:
 
     const std::array<Vertex, 3> Vertices;
@@ -29,7 +33,7 @@ public:
 
     Triangle(Vertex vertex1, Vertex vertex2, Vertex vertex3)
         : Vertices({vertex1, vertex2, vertex3}),
-        Area(computeArea()),
+        Area(computeArea()), normalUp(computeNormalUp()),
         ownPlane(
                 Vertices[0].Position,
                 getThirdOrthogonalVector(
@@ -49,6 +53,7 @@ private:
 
     [[nodiscard]] BarycentricCoordinates computeBarycentricCoordinates(const Point &) const;
     [[nodiscard]] double computeArea() const;
+    [[nodiscard]] Vector computeNormalUp() const;
     [[nodiscard]] Vertex extrapolateFor(const BarycentricCoordinates&, const Vector& position) const;
 
     [[nodiscard]] static double computeAreaBetween(const Point& p1, const Point& p2, const Point& p3) {
@@ -60,6 +65,7 @@ private:
     }
 
     const Plane ownPlane;
+    const Vector normalUp;
 };
 
 

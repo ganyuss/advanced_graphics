@@ -15,6 +15,7 @@
 #include "raytracer.h"
 #include "sphere.h"
 #include "Cone.h"
+#include "Triangle.h"
 #include <fstream>
 
 template <typename VariableType>
@@ -217,6 +218,29 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
         if (everythingOK)
             variable = std::make_unique<Plane>(pos, norm);
     }
+    else if (objectType == "triangle") {
+        Point p1{}, p2{}, p3{};
+        std::array<double, 2> UV1{}, UV2{}, UV3{};
+
+        everythingOK = tryRead(node, "corner1", p1)
+                && tryRead(node, "corner2", p2)
+                && tryRead(node, "corner3", p3);
+
+
+        tryRead(node, "UV1", UV1, {0, 0});
+        tryRead(node, "UV2", UV2, {1, 0});
+        tryRead(node, "UV3", UV3, {0, 1});
+
+        Vector normal = getThirdOrthogonalVector(p2 - p1, p3 - p1);
+
+
+        if (everythingOK)
+            variable = std::make_unique<Triangle>(
+                    Vertex{p1, normal, UV1},
+                    Vertex{p2, normal, UV2},
+                    Vertex{p3, normal, UV3}
+                    );
+    }
 
     if (variable && everythingOK) {
         // read the material and attach to object
@@ -224,6 +248,25 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
     }
 
     return everythingOK;
+}
+
+template<>
+bool tryRead<std::array<double, 2>>(const YAML::Node &node, std::array<double, 2>& variable, const std::array<double, 2>& defaultValue){
+    if (node.size() != 2) {
+        variable = defaultValue;
+        return false;
+    }
+
+    try {
+        node[0] >> variable[0];
+        node[1] >> variable[1];
+    }
+    catch (YAML::Exception & e) {
+        variable = defaultValue;
+        return false;
+    }
+
+    return true;
 }
 
 template<>

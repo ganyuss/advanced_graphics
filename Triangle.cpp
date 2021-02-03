@@ -21,12 +21,16 @@ Hit Triangle::intersect(const Ray &ray) const {
             [] (double d) { return d < 0 || d > 1; }))
         return Hit::NO_HIT();
 
+    if (barycentricCoordinates[0] + barycentricCoordinates[1] + barycentricCoordinates[2] > 1 + std::numeric_limits<double>::epsilon()) {
+        return Hit::NO_HIT();
+    }
+
     Vertex extrapolationOnHit = extrapolateFor(barycentricCoordinates, planeHit.Position);
 
     return {
             (extrapolationOnHit.Position - ray.Origin).norm(),
             extrapolationOnHit.Position,
-            extrapolationOnHit.Normal,
+            applyNormalMap(extrapolationOnHit.Position, extrapolationOnHit.Normal, normalUp),
             ray
     };
 }
@@ -68,4 +72,16 @@ Vertex Triangle::extrapolateFor(const Triangle::BarycentricCoordinates & barycen
     }
 
     return output;
+}
+
+Vector Triangle::computeNormalUp() const {
+    Vector output =
+            (Vertices[1].UV[0] - Vertices[0].UV[0]) * (Vertices[1].Position - Vertices[0].Position)
+            + (Vertices[2].UV[0] - Vertices[0].UV[0]) * (Vertices[2].Position - Vertices[0].Position);
+
+    if (output == Vector{0, 0, 0}) {
+        return Vector{1, 0, 0};
+    }
+
+    return output.normalized();
 }
