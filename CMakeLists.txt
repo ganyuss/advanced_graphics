@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-set (CMAKE_FIND_ROOT_PATH D:/Programmes/MinGW)
+
 project(RayTracer)
 
 set (CMAKE_CXX_STANDARD 17)

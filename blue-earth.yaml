@@ -28,15 +28,14 @@ SuperSampling:
   factor: 1
 
 Lights:
-- position: [0,0,4000]
+- position: [0,0,50]
   color: [1.5,1.0,1.5]
   radius: 200
 
 Objects:
-- type: sphere
-  position: [0,0,0] #[0,0,149597890]
-  radius: 200 #[6378.1,[0,0.91740769935748826377361893702175,-0.39794863130761038954479576746719]]
-  quaternion: [1,1,1,0] #angle: -90
+
+- type: triangleAggregate
+  fileName: "D:/Cours/ET5/Advanced Graphics/Medievil_Helmet_OBJ/Medievil_01.obj"
   material:
     texture: "D:/Cours/ET5/Advanced Graphics/earth.png"
     ka: 0.2
@@ -44,4 +43,4 @@ Objects:
     ks: 0.0
     n: 1
     index: 1
-    type: reflection
+    type: default

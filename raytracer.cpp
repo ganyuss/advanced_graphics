@@ -15,6 +15,7 @@
 #include "raytracer.h"
 #include "sphere.h"
 #include "Cone.h"
+#include "TriangleAggregate.h"
 #include "Triangle.h"
 #include <fstream>
 
@@ -240,6 +241,14 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
                     Vertex{p2, normal, UV2},
                     Vertex{p3, normal, UV3}
                     );
+    }
+    else if (objectType == "triangleAggregate") {
+
+        std::string fileName;
+
+        everythingOK = tryRead(node, "fileName", fileName);
+        if (everythingOK)
+            variable = std::make_unique<TriangleAggregate>(fileName);
     }
 
     if (variable && everythingOK) {
