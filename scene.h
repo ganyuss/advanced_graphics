@@ -44,7 +44,7 @@ struct Camera {
         double scale = Up.norm();
         Vector directionComponentX = (x - maxY / 2 + dx) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized() * scale;
         Vector directionComponentY = (maxX / 2 - y + dy) * 1 * Up;
-        return Center - Eye + directionComponentX + directionComponentY;
+        return (Center - Eye).normalized() + directionComponentX/1000 + directionComponentY/1000;
     }
 };
 
