@@ -29,17 +29,9 @@ class Triangle : public Object {
 public:
 
     const std::array<Vertex, 3> Vertices;
-    const double Area;
 
     Triangle(Vertex vertex1, Vertex vertex2, Vertex vertex3)
-        : Vertices({vertex1, vertex2, vertex3}),
-        Area(computeArea()), normalUp(computeNormalUp()),
-        ownPlane(
-                Vertices[0].Position,
-                getThirdOrthogonalVector(
-                        Vertices[0].Position - Vertices[1].Position,
-                        Vertices[0].Position - Vertices[2].Position)
-                )
+        : Vertices({vertex1, vertex2, vertex3})
     { }
 
 
@@ -64,8 +56,14 @@ private:
         return v1.cross(v2).norm() / 2;
     }
 
-    const Plane ownPlane;
-    const Vector normalUp;
+    const double OneOverArea{1/computeArea()};
+    const Vector normalUp{computeNormalUp()};
+    const Plane ownPlane{
+            Vertices[0].Position,
+            getThirdOrthogonalVector(
+                    Vertices[0].Position - Vertices[1].Position,
+                    Vertices[0].Position - Vertices[2].Position)
+    };
 };
 
 

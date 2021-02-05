@@ -55,6 +55,7 @@ Hit TriangleAggregate::intersect(const Ray &ray) const {
     }
 
     if (finalHit != Hit::NO_HIT()) {
+        #pragma omp critical
         TriangleAggregate::parentOf.insert(std::pair<Vector, const Triangle&>(finalHit.Position, triangles[triangleHitIndex]));
         return finalHit;
     }

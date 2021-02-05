@@ -17,6 +17,7 @@
 #include "Cone.h"
 #include "TriangleAggregate.h"
 #include "Triangle.h"
+#include "box.h"
 #include <fstream>
 
 template <typename VariableType>
@@ -250,6 +251,33 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
         if (everythingOK)
             variable = std::make_unique<TriangleAggregate>(fileName);
     }
+    else if (objectType == "quadrilateral") {
+
+        Point position{};
+        Vector up{}, side{};
+
+        everythingOK = tryRead(node, "position", position)
+                       && tryRead(node, "up", up)
+                       && tryRead(node, "side", side);
+
+        if (everythingOK)
+            variable = std::make_unique<Quadrilateral>(position, up, side);
+    }
+    else if (objectType == "box") {
+
+        Point position{};
+        Vector up{}, side{};
+        double depth;
+
+        everythingOK = tryRead(node, "position", position)
+                       && tryRead(node, "up", up)
+                       && tryRead(node, "side", side)
+                       && tryRead(node, "depth", depth);
+
+        if (everythingOK)
+            variable = std::make_unique<Box>(position, up, side, depth);
+    }
+
 
     if (variable && everythingOK) {
         // read the material and attach to object

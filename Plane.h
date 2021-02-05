@@ -21,10 +21,9 @@ public:
 
     [[nodiscard]] Vector projectOn(const Vector &) const;
 
+    const Point Origin;
+    const Vector Normal;
 private:
-
-    Point Origin;
-    Vector Normal;
 };
 
 

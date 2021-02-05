@@ -4,7 +4,7 @@ project(RayTracer)
 
 set (CMAKE_CXX_STANDARD 17)
 
-set(SRCS main.cpp raytracer.cpp sphere.cpp light.cpp material.cpp image.cpp triple.cpp lodepng.cpp scene.cpp Cone.cpp commongeometry.cpp Plane.cpp Quaternion.cpp Triangle.cpp TriangleAggregate.cpp glm.cpp)
+set(SRCS main.cpp raytracer.cpp sphere.cpp light.cpp material.cpp image.cpp triple.cpp lodepng.cpp scene.cpp Cone.cpp commongeometry.cpp Plane.cpp Quaternion.cpp Triangle.cpp TriangleAggregate.cpp glm.cpp box.cpp)
 file(GLOB YAML_SRCS "yaml/*.cpp")
 
 file(GLOB YAML_HEADERS "yaml/*.h")

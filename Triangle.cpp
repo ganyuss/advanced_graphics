@@ -47,7 +47,7 @@ Triangle::BarycentricCoordinates Triangle::computeBarycentricCoordinates(const P
     BarycentricCoordinates output;
 
     for (std::size_t i = 0; i < 3; ++i) {
-        output[i] = computeAreaBetween(p, Vertices[(i+1)%3].Position, Vertices[(i+2)%3].Position) / Area;
+        output[i] = computeAreaBetween(p, Vertices[(i+1)%3].Position, Vertices[(i+2)%3].Position) * OneOverArea;
     }
 
     return output;
