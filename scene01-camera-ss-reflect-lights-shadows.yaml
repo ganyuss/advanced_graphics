@@ -27,6 +27,10 @@ MaxIterations: 3
 SuperSampling:
   factor: 3
 
+SoftShadowsPrecision:
+  edge: 3
+  shade: 4
+
 Lights:
 - position: [-200,600,1500]
   color: [0.4,0.4,0.8]
@@ -62,6 +66,7 @@ Objects:
 - type: sphere
   position: [290,170,150]
   radius: 50
+  quaternion: [ 1, 0, 1, 0 ]
   material: # red
     texture: ../earth.png
     ka: 0.2

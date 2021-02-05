@@ -1,12 +1,17 @@
 RenderMode : PHONG
-Eye: [200,200,1000]
+
+Camera: # Possible position of moon (although I haven't checked whether it's on the right orbit)
+  eye: [200,200, 1000] #eye: [192201.5,0,149264987] #[384403,0,149597890] rotated 60 degrees into the sun
+  center: [0,0,0] #center: [0,0,149597890]
+  up: [0,1,0] #up: [0,40,0]
+  viewSize: [400,400]
 
 DistMin : -200
 DistMax : 1000
 SoftShadows: Off
-MaxIterations: 3
+MaxIterations: 1
 SuperSampling:
-  factor: 2
+  factor: 3
 
 Lights:
   - position: [-1000,600,500]
@@ -20,14 +25,24 @@ Lights:
     size: 80
 
 Objects:
-  - type: triangle
-    corner1: [ 100,100,-200 ]
-    corner2: [ 301,100,0 ]
-    corner3: [ 100,301,0 ]
-    UV1: [ 1, 1 ]
-    UV2: [ 0, 1 ]
-    UV3: [ 1, 0 ]
-    radius: 100
+  - type: box
+    position: [ 0,0,-200 ]
+    up: [ 0,100,100 ]
+    side: [ 100,0,100 ]
+    depth: 150
+    material:
+      texture: ../broken_wall.png
+      ka: 0.2
+      kd: 0.8
+      ks: 0.5
+      normalMap: ../broken_wall_normal.png
+      n: 64
+      index: 1
+      type: default
+  - type: quadrilateral
+    position: [ -100,0,0 ]
+    up: [ 100,0,0 ]
+    side: [ 0,100,100 ]
     material:
       texture: ../broken_wall.png
       ka: 0.2
@@ -38,10 +53,9 @@ Objects:
       index: 1
       type: default
   - type: triangle
-    corner1: [300,300,200]
-    corner2: [ 100,300,0 ]
-    corner3: [300,100,0]
-    radius: 100
+    corner1: [ -100,-50,0 ]
+    corner2: [ 100,-100,0 ]
+    corner3: [ 150,50,0 ]
     material:
       texture: ../broken_wall.png
       ka: 0.2
@@ -49,16 +63,5 @@ Objects:
       ks: 0.5
       normalMap: ../broken_wall_normal.png
       n: 64
-      index: 1
-      type: default
-  - type: sphere
-    position: [ 200, 100, 0 ]
-    radius: 30
-    material:
-      texture: ../ice_cream.png
-      ka: 0.2
-      kd: 0.8
-      ks: 0.1
-      n: 8
       index: 1
       type: default

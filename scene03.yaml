@@ -1,13 +1,22 @@
 ---
 #  scene03
 
-RenderMode : PHONG
+# RenderMode : PHONG
+RenderMode: GOOCH
+GoochParameters:
+  b: 0.55
+  y: 0.3
+  alpha: 0.25
+  beta: 0.5
+
 Eye: [200,200,1000]
 
 DistMin : -2000
 DistMax : 10000
 SoftShadows: On
 MaxIterations: 3
+SuperSampling:
+  factor: 4
 
 Lights:
   - position: [-1000,600,500]
