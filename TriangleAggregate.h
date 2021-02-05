@@ -40,28 +40,26 @@ public:
 
         for(int i = 0; i < model->numtriangles; i++){
 
-            std::vector<int> vertex_indices; // indices pour recup les points du triangle
-            for (int j = 0; j < 3; j++){
-                vertex_indices.push_back(model->triangles[i].vindices[j]);
-            }
-
+            int* vertexIndices = model->triangles[i].vindices;
             int* normalIndices = model->triangles[i].nindices;
+            int* uvIndices = nullptr;
+            if (model->numtexcoords > 0) {
+                uvIndices = model->triangles[i].vindices;
+            }
+            std::vector<Vertex> vertices{};
 
-            Point p0{model->vertices[vertex_indices[0]*3], model->vertices[vertex_indices[0]*3 + 1], model->vertices[vertex_indices[0]*3 + 2]};
-            Point p1{model->vertices[vertex_indices[1]*3], model->vertices[vertex_indices[1]*3 + 1], model->vertices[vertex_indices[1]*3 + 2]};
-            Point p2{model->vertices[vertex_indices[2]*3], model->vertices[vertex_indices[2]*3 + 1], model->vertices[vertex_indices[2]*3 + 2]};
-
-            Vector n0{model->normals[normalIndices[0]*3], model->normals[normalIndices[0]*3+1], model->normals[normalIndices[0]*3+2]};
-            Vector n1{model->normals[normalIndices[1]*3], model->normals[normalIndices[1]*3+1], model->normals[normalIndices[1]*3+2]};
-            Vector n2{model->normals[normalIndices[2]*3], model->normals[normalIndices[2]*3+1], model->normals[normalIndices[2]*3+2]};
-
-            Triangle t{
-                Vertex{p0, n0, {0, 0}},
-                Vertex{p1, n1, {0, 0}},
-                Vertex{p2, n2, {0, 0}},
-                };// besoin de 3 vertex
-
-            triangles.push_back(t);
+            for (int j = 0; j < 3; ++j) {
+                vertices.push_back(Vertex{
+                    Point{model->vertices[vertexIndices[j]*3], model->vertices[vertexIndices[j]*3 + 1], model->vertices[vertexIndices[j]*3 + 2]},
+                    Vector{model->normals[normalIndices[j]*3], model->normals[normalIndices[j]*3+1], model->normals[normalIndices[j]*3+2]},
+                    (uvIndices ? std::array<double, 2>{model->texcoords[uvIndices[j]*2], model->texcoords[uvIndices[j]*2+1]} : std::array<double, 2>{0, 0})
+                });
+            }
+            triangles.emplace_back(
+                vertices[0],
+                vertices[1],
+                vertices[2]
+            );
         }
 
         glmDelete(model);
