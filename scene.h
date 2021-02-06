@@ -32,20 +32,39 @@ class Material;
 
 enum Mode {PHONG, GOOCH, ZBUFFER, NORMAL, TEXTURE};
 
-struct Camera {
-    Point Eye;
-    Point Center = {200,200,-200};
-    Vector Up = {0, 1, 0};
-    std::array<unsigned int, 2> ViewSize = {400, 400};
-    // float ApertureRadius;
-    // float ApertureSamples;
+class Camera {
+public:
 
-    inline Point ViewDirection(int x, int y, double dx, double dy, int maxX, int maxY) const {
-        double scale = Up.norm();
-        Vector directionComponentX = (x - maxY / 2 + dx) * 1 * getThirdOrthogonalVector(Center - Eye, Up).normalized() * scale;
-        Vector directionComponentY = (maxX / 2 - y + dy) * 1 * Up;
-        return (Center - Eye).normalized() + directionComponentX/1000 + directionComponentY/1000;
+    Camera(Point Eye, Point Center, Vector Up)
+        : eye(Eye),
+        scale(Up.norm()),
+        viewDirection((Center - Eye).normalized()),
+        upDirection(Up.normalized())
+    { }
+
+    explicit Camera(Point Eye) : Camera(Eye, {200,200,-200}, {0, 1, 0})
+    { }
+
+    Camera() : Camera(Vector{})
+    { }
+
+    [[nodiscard]] Vector Eye() const {return eye; }
+
+    std::array<unsigned int, 2> ViewSize = {400, 400};
+
+    [[nodiscard]] inline Point ViewDirection(int x, int y, double dx, double dy) const {
+
+        Vector directionComponentX = (x - ViewSize[0] / 2.f + dx) * sideDirection * scale;
+        Vector directionComponentY = (ViewSize[1] / 2.f - y + dy) * upDirection * scale;
+        return viewDirection*1000 + directionComponentX + directionComponentY;
     }
+
+private:
+
+    Point eye;
+    double scale;
+    Vector viewDirection, upDirection;
+    Vector sideDirection = getThirdOrthogonalVector(viewDirection, upDirection).normalized();
 };
 
 
@@ -80,7 +99,7 @@ public:
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);
     Color traceTextures(const Ray &ray);
-    Image&& render();
+    Image render();
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);
     void setMode(Mode mode);

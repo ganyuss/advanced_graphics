@@ -121,14 +121,22 @@ bool tryRead<std::array<unsigned int, 2>>(const YAML::Node &node, std::array<uns
 template <>
 bool tryRead<Camera>(const YAML::Node &node, Camera& variable, const Camera& defaultValue) {
 
-    bool everythingOK = tryRead(node, "eye", variable.Eye);
+    Point eye{}, center{};
+    Vector up{};
+    std::array<unsigned int, 2> ViewSize{};
 
-    tryRead(node, "center", variable.Center, Vector{0, 0, 0});
-    tryRead(node, "up", variable.Up, Vector{0, 1, 0});
-    tryRead(node, "viewSize", variable.ViewSize, {400, 400});
+    bool everythingOK = tryRead(node, "eye", eye);
+
+    tryRead(node, "center", center, {200,200,-200});
+    tryRead(node, "up", up, Vector{0, 1, 0});
+    tryRead(node, "viewSize", ViewSize, {400, 400});
 
     if (! everythingOK) {
         variable = defaultValue;
+    }
+    else {
+        variable = Camera{eye, center, up};
+        variable.ViewSize = ViewSize;
     }
 
     return everythingOK;
@@ -415,9 +423,9 @@ bool Raytracer::readScene(const std::string& inputFilename)
                 scene.camera = camera;
             }
             else {
-                Camera cameraDefault{};
-                tryRead(doc, "Eye", cameraDefault.Eye, Vector{200, 200, 0});
-                scene.camera = cameraDefault;
+                Vector eye{};
+                tryRead(doc, "Eye", eye, Vector{200, 200, 0});
+                scene.camera = Camera{eye};
             }
 
             try {

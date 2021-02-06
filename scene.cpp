@@ -127,7 +127,7 @@ Color Scene::traceTextures(const Ray &ray)
     return Color{uv[0], uv[1], 0};
 }
 
-Image&& Scene::render()
+Image Scene::render()
 {
     Image img(camera.ViewSize[0], camera.ViewSize[1]);
 
@@ -164,7 +164,7 @@ Image&& Scene::render()
 
             for (int i = 0; i < superSamplingFactor; i++) {
                 for (int j = 0; j < superSamplingFactor; j++) {
-                    Ray ray(camera.Eye, (camera.ViewDirection(x, y, delta*(i+1), delta*(j+1), h, w)).normalized());
+                    Ray ray(camera.Eye(), (camera.ViewDirection(x, y, delta*(i+1), delta*(j+1))).normalized());
                     pixelColor += traceFunction(this, ray) / rayPerPixel;
                 }
             }
@@ -174,7 +174,7 @@ Image&& Scene::render()
         }
     }
 
-    return std::move(img);
+    return img;
 }
 
 void Scene::addObject(std::unique_ptr<Object>&& o)
