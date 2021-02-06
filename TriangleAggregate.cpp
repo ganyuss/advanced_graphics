@@ -36,11 +36,21 @@ Sphere TriangleAggregate::computeCircumscribedSphere() const {
 
     Point center{(maxX + minX)/2, (maxY + minY)/2, (maxZ + minZ)/2};
 
-    return Sphere{center, std::max({maxX - minX, maxY - minY, maxZ - minZ}) / 2};
+    double maxDistanceSquared = 0;
+    for (const Triangle& triangle : triangles) {
+        for (const Vertex& vertex : triangle.Vertices) {
+            double distanceSquared = (center - vertex.Position).norm2();
+
+            if (distanceSquared > maxDistanceSquared)
+                maxDistanceSquared = distanceSquared;
+        }
+    }
+
+    return Sphere{center, std::sqrt(maxDistanceSquared)};
 }
 
 Hit TriangleAggregate::intersect(const Ray &ray) const {
-    //return circumscribedSphere.intersect(ray);
+
     if (circumscribedSphere.intersect(ray) == Hit::NO_HIT()) {
         return Hit::NO_HIT();
     }
