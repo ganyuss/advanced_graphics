@@ -50,7 +50,7 @@ Color Scene::trace(const Ray &ray, int iterations)
     if (object->material.type == MaterialType::REFRACTION && iterations > 0) {
 
         output += computeIllumination(current_hit, specular, object);
-        output += computeRefraction(current_hit, object->material, iterations);
+        output += computeRefraction(current_hit, object->material, iterations) * object->material.color;
     }
     else {
 
@@ -127,8 +127,10 @@ Color Scene::traceTextures(const Ray &ray)
     return Color{uv[0], uv[1], 0};
 }
 
-void Scene::render(Image &img)
+Image&& Scene::render()
 {
+    Image img(camera.ViewSize[0], camera.ViewSize[1]);
+
     Color (*traceFunction)(Scene*, const Ray&) = nullptr;
 
     switch (mode) {
@@ -171,6 +173,8 @@ void Scene::render(Image &img)
             img(x, y) = pixelColor;
         }
     }
+
+    return std::move(img);
 }
 
 void Scene::addObject(std::unique_ptr<Object>&& o)

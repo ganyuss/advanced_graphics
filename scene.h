@@ -80,7 +80,7 @@ public:
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);
     Color traceTextures(const Ray &ray);
-    void render(Image &img);
+    Image&& render();
     void addObject(std::unique_ptr<Object>&& o);
     void addLight(std::unique_ptr<Light>&& l);
     void setMode(Mode mode);

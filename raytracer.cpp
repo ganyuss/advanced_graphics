@@ -488,9 +488,8 @@ bool Raytracer::readScene(const std::string& inputFilename)
 
 void Raytracer::renderToFile(const std::string& outputFilename)
 {
-    Image img(scene.camera.ViewSize[0],scene.camera.ViewSize[1]);
     std::cout << "Tracing..." << std::endl;
-    scene.render(img);
+    Image img = scene.render();
     std::cout << "Writing image to " << outputFilename << "..." << std::endl;
     img.write_png(outputFilename.c_str());
     std::cout << "Done." << std::endl;
