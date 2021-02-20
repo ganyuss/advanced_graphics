@@ -29,3 +29,12 @@ Vector rotateAround(const Vector &vectorToRotate, const Vector &vectorReference,
 Vector getThirdOrthogonalVector(const Vector& v1, const Vector& v2) {
     return v1.cross(v2);
 }
+
+Vector getAnyOrthogonalVector(const Vector &v) {
+    Vector output = getThirdOrthogonalVector(v, Vector{1, 0, 0});
+
+    if (output == Vector{0, 0, 0})
+        return Vector{0, 1, 0};
+    else
+        return output;
+}

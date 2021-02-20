@@ -245,13 +245,7 @@ float Scene::getLightFactorFor(const std::unique_ptr<Light>& light, const Hit& h
         return current_hit_new.Distance >= (light->Position - dPosition).norm() ? 1 : 0;
     }
 
-    // We try to get any vector that is not collinear with newRay.Direction
-    Vector lightPositionDeltaDirection = Vector{1, 0, 0} - project(Vector{1, 0, 0}, newRay.Direction);
-
-    if (lightPositionDeltaDirection == Vector{0, 0, 0})
-        lightPositionDeltaDirection = Vector{0, 1, 0};
-    else
-        lightPositionDeltaDirection.normalize();
+    Vector lightPositionDeltaDirection = getAnyOrthogonalVector(newRay.Direction).normalized();
     Vector lightPositionDelta = lightPositionDeltaDirection * light->Size;
 
     float softLightFactor = 0;
