@@ -22,5 +22,5 @@ ELSE()
     message("Missed OpenMP! x_x")
 ENDIF()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 add_executable(hello ${SRCS} ${YAML_SRCS} ${HEADERS} ${YAML_HEADERS})
