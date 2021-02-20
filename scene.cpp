@@ -123,6 +123,13 @@ Color Scene::traceTextures(const Ray &ray)
 
     auto uv = obj->getTextureCoordinatesFor(current_hit.Position);
 
+    // to better fit the UV repeating system of the Image class
+    for (std::size_t i = 0; i < 2; ++i) {
+        if (uv[i] > 0)
+            uv[i] = std::abs(uv[i] - static_cast<int>(uv[i]));
+        else
+            uv[i] = std::abs(1 + uv[i] - static_cast<int>(uv[i]));
+    }
 
     return Color{uv[0], uv[1], 0};
 }
