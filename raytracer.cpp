@@ -221,12 +221,15 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
     else if (objectType == "plane") {
         Point pos{};
         Vector norm{};
+        double scale;
 
         everythingOK = tryRead(node, "position", pos)
             && tryRead(node, "normal", norm);
 
+        tryRead(node, "UV_scale", scale, 0.01);
+
         if (everythingOK)
-            variable = std::make_unique<Plane>(pos, norm);
+            variable = std::make_unique<Plane>(pos, norm, scale);
     }
     else if (objectType == "triangle") {
         Point p1{}, p2{}, p3{};

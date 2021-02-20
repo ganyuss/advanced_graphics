@@ -23,8 +23,18 @@ Hit Plane::intersect(const Ray &ray) const {
         );
 }
 
-std::array<double, 2> Plane::getTextureCoordinatesFor(const Point &) const {
-    return {0, 0};
+std::array<double, 2> Plane::getTextureCoordinatesFor(const Point &p) const {
+    Vector originToPoint = p - Origin;
+
+    // used the same formula as Quadrilateral in box.cpp
+    double firstComponent = Normal.dot(UVVector1.cross(originToPoint)) * firstComponentFactor;
+    double secondComponent = Normal.dot(UVVector2.cross(originToPoint)) * secondComponentFactor;
+
+
+    return {
+        firstComponent*UVScale,
+        secondComponent*UVScale
+    };
 }
 
 Vector Plane::projectOn(const Vector& v) const {

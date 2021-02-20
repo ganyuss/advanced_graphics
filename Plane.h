@@ -12,8 +12,8 @@
 
 class Plane : public Object {
 public:
-    Plane(Point Origin, Vector Normal) :
-            Origin(Origin), Normal(Normal)
+    Plane(Point Origin, Vector Normal, double UVScale) :
+            Origin(Origin), Normal(Normal), UVScale(UVScale)
     { }
 
     [[nodiscard]] Hit intersect(const Ray &ray) const override;
@@ -24,6 +24,15 @@ public:
     const Point Origin;
     const Vector Normal;
 private:
+
+    // Used in UV calculations
+    const Vector UVVector1 = getAnyOrthogonalVector(Normal).normalized();
+    const Vector UVVector2 = getThirdOrthogonalVector(Normal, UVVector1).normalized();
+
+    const double firstComponentFactor = 1 / Normal.dot(UVVector1.cross(UVVector2));
+    const double secondComponentFactor = 1  / Normal.dot(UVVector2.cross(UVVector1));
+
+    const double UVScale;
 };
 
 
