@@ -21,11 +21,13 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
-#include "triple.h"
-#include "material.h"
-#include "commongeometry.h"
 #include "scene.h"
+#include "material.h"
+#include "triple.h"
+#include "commongeometry.h"
 
+
+struct GoochIlluminationModel;
 
 class Ray
 {
@@ -109,64 +111,28 @@ public:
 
     }
 
-    [[nodiscard]] virtual Color computeDiffusePhongAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
-
-        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
-        ray_reflection.normalize();
-        Vector lightIncidence = Position - hit_point.Position;
-        lightIncidence.normalize();
-        double diffuseFactor = hit_point.Normal.dot(lightIncidence);
-        Color diffuseColor{};
-        if (diffuseFactor <= 0) {
-            diffuseColor.set(0,0,0);
-        }else {
-            diffuseColor = color * colorOnHit * material.kd * diffuseFactor;
-        }
-
-        return diffuseColor;
-
-    }
-
-    [[nodiscard]] virtual Color computeDiffuseGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit, GoochIlluminationModel illuminationModel) const {
-        // source: http://artis.imag.fr/~Cyril.Soler/DEA/NonPhotoRealisticRendering/Papers/p447-gooch.pdf
-
-        Color kCool = Color{0, 0, illuminationModel.b} + illuminationModel.alpha * material.kd * colorOnHit;
-        Color kWarm = Color{illuminationModel.y, illuminationModel.y, 0} + illuminationModel.beta * material.kd * colorOnHit;
-
-        Vector lightIncidence = Position - hit_point.Position;
-        lightIncidence.normalize();
-        double diffuseFactor = hit_point.Normal.dot(lightIncidence);
-        diffuseFactor = (diffuseFactor + 1) / 2;
-        Color diffuseColor = (1 - diffuseFactor) * (kCool)
-                        + diffuseFactor * kWarm;
-
-        // Highlights
-        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
-        float ER = std::clamp(lightIncidence.dot(ray_reflection.normalized()), 0.0, 1.0);
-
-        Color specular = color * std::pow(ER, material.n);
-
-        return diffuseColor; // + specular;
-    }
-
-    [[nodiscard]] virtual Color computeSpecularGoochAt(const Hit& hit_point, const Material& material, const Color& colorOnHit, double specularValueOnHit) const {
-        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
-        ray_reflection.normalize();
-        Vector lightIncidence = Position - hit_point.Position;
-        lightIncidence.normalize();
-
-        double specularFactor = ray_reflection.dot(lightIncidence);
-        if (specularFactor < 0) {
-            specularFactor = 0;
-        }
-        Color specularColor = color * specularValueOnHit * pow(specularFactor,material.n);
-
-        return specularColor;
-    }
+    [[nodiscard]] virtual Color computeDiffusePhongAt(const Hit&, const Material&, const Color& colorOnHit) const;
+    [[nodiscard]] virtual Color computeDiffuseGoochAt(const Hit&, const Material&, const Color& colorOnHit, GoochIlluminationModel illuminationModel) const;
+    [[nodiscard]] virtual Color computeSpecularGoochAt(const Hit&, const Material&, const Color& colorOnHit, double specularValueOnHit) const;
 
     Point Position;
     Color color;
     float Size;
 };
+
+
+namespace std {
+    template<>
+    struct hash<Light> {
+        std::size_t operator()(Light const &light) const noexcept {
+            return hash_combine<double>(154945235,
+                                        hash<Vector>{}(light.Position),
+                                        hash<Color>{}(light.color),
+                                        light.Size
+                                        );
+        }
+    };
+}
+
 
 #endif /* end of include guard: LIGHT_H_PG2BAJRA */

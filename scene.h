@@ -19,11 +19,14 @@
 
 #include <vector>
 #include <memory>
+#include <array>
+#include "object.h"
 #include "triple.h"
 #include "image.h"
 #include "yaml/yaml.h"
 #include "commongeometry.h"
-#include "object.h"
+
+class Object;
 
 class Light;
 class Hit;

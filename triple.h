@@ -122,20 +122,25 @@ public:
     }
 
     operator ValueType() const {
-        check_val();
-        return val;
+        return check_val(val);
     }
 
 
 private:
 
     void check_val() {
-        if (val < minimum) {
-            val = minimum;
+        val = check_val(val);
+    }
+
+    static double check_val(double value) {
+        if (value < minimum) {
+            value = minimum;
         }
-        else if (val > maximum) {
-            val = maximum;
+        else if (value > maximum) {
+            value = maximum;
         }
+
+        return value;
     }
 
     ValueType val;
@@ -298,6 +303,15 @@ template <typename Triple, typename Number, class = typename std::enable_if<is_t
 Triple operator/(Triple t1, Number n) { return t1 /= n; }
 
 
+template <typename Triple, class = typename std::enable_if<is_triple_v<Triple>, bool>::type>
+inline double divisionBetween(const Triple& vectorToDivide, const Triple& divider) {
+    return std::min(
+            vectorToDivide.X() / divider.X(),
+            std::min(vectorToDivide.Y() / divider.Y(),
+                    vectorToDivide.Z() / divider.Z())
+        );
+}
+
 
 inline std::size_t hash_combine(std::size_t seed) { return seed; }
 
@@ -314,7 +328,20 @@ namespace std
     {
         std::size_t operator()(Vector const& vector) const noexcept
         {
-            return hash_combine<double>(0, vector[0], vector[1], vector[2]);
+            return hash_combine<double>(321879388, vector[0], vector[1], vector[2]);
+        }
+    };
+
+    template<> struct hash<Color>
+    {
+        std::size_t operator()(Color const& color) const noexcept
+        {
+            return hash_combine<double>(
+                    548971589,
+                    // have to require the inner value of the clamped_value
+                    color[0].operator double(),
+                    color[1].operator double(),
+                    color[2].operator double());
         }
     };
 }

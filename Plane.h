@@ -12,7 +12,7 @@
 
 class Plane : public Object {
 public:
-    Plane(Point Origin, Vector Normal, double UVScale) :
+    Plane(Point Origin, Vector Normal, double UVScale = 1) :
             Origin(Origin), Normal(Normal), UVScale(UVScale)
     { }
 

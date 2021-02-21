@@ -21,6 +21,8 @@
 #include "yaml/node.h"
 #include "image.h"
 
+class Light;
+
 enum MaterialType { DEFAULT, REFLECTION, REFRACTION };
 
 struct Material
@@ -30,6 +32,9 @@ struct Material
     std::optional<Image> texture;
     std::optional<Image> specularMap;
     std::optional<Image> normalMap;
+
+
+    std::map<Light, std::optional<Image>> refractedLightMap{};
 
 
     double ka;          // ambient intensity
@@ -46,4 +51,5 @@ struct Material
 void operator>>(const YAML::Node &node, MaterialType &mode);
 
 
+#include "light.h"
 #endif /* end of include guard: MATERIAL_H_TWMNT2EJ */
