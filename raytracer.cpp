@@ -209,11 +209,15 @@ bool tryRead<std::unique_ptr<Object>>(const YAML::Node &node, std::unique_ptr<Ob
     else if (objectType == "cone") {
         Point pos{};
         Vector side{};
+        double radius;
         Vector up{};
 
         everythingOK = tryRead(node, "position", pos)
-            && tryRead(node, "side", side)
             && tryRead(node, "up", up);
+
+        if (everythingOK && ! tryRead(node, "side", side))
+            if (tryRead(node, "radius", radius))
+                side = getAnyOrthogonalVector(up).normalized() * radius;
 
         if (everythingOK)
             variable = std::make_unique<Cone>(pos, side, up);
