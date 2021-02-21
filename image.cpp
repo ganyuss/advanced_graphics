@@ -57,8 +57,6 @@ void Image::read_png(const char* filename)
     //decode the png
     LodePNG::Decoder decoder;
     decoder.decode(image, buffer.empty() ? nullptr : &buffer[0], (unsigned)buffer.size());
-    std::cout << decoder.getChannels() << std::endl;
-    std::cout << decoder.getBpp() << std::endl;
 
     if (decoder.getChannels()<3 || decoder.getBpp()<24) {
         std::cerr << "Error: only color (RGBA), 8 bit per channel png images are supported." << std::endl;
