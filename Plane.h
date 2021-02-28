@@ -12,8 +12,8 @@
 
 class Plane : public Object {
 public:
-    Plane(Point Origin, Vector Normal, double UVScale = 1) :
-            Origin(Origin), Normal(Normal), UVScale(UVScale)
+    Plane(Point Position, Vector Normal, double UVScale = 1) :
+            Object(Position), Normal(Normal), UVScale(UVScale)
     { }
 
     [[nodiscard]] Hit intersect(const Ray &ray) const override;
@@ -21,7 +21,6 @@ public:
 
     [[nodiscard]] Vector projectOn(const Vector &) const;
 
-    const Point Origin;
     const Vector Normal;
 private:
 

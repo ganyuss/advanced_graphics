@@ -18,11 +18,11 @@ class TriangleAggregate : public Object {
 public:
 
     TriangleAggregate(std::initializer_list<Triangle> triangles)
-            : triangles(triangles)
+            : circumscribedSphere(computeCircumscribedSphere()), Object(circumscribedSphere.Position), triangles(triangles)
     { }
 
     TriangleAggregate(std::vector<Triangle>  triangles)
-            : triangles(std::move(triangles))
+            : circumscribedSphere(computeCircumscribedSphere()), Object(circumscribedSphere.Position), triangles(std::move(triangles))
     { }
 
     TriangleAggregate(const std::string& fileName) : TriangleAggregate(objParsing(fileName))
@@ -92,7 +92,7 @@ private:
     [[nodiscard]] Sphere computeCircumscribedSphere() const;
 
     const std::vector<Triangle> triangles;
-    const Sphere circumscribedSphere = computeCircumscribedSphere();
+    const Sphere circumscribedSphere;
 
     static std::unordered_map<Point, const Triangle&> parentOf;
 };

@@ -18,8 +18,6 @@
 #include <functional>
 #include <stdexcept>
 #include "scene.h"
-#include "object.h"
-#include "light.h"
 #include <vector>
 #include <cmath>
 #include <cassert>
@@ -50,7 +48,7 @@ Color Scene::trace(const Ray &ray, int iterations)
     if (object->material.type == MaterialType::REFRACTION && iterations > 0) {
 
         output += computeIllumination(current_hit, specular, object);
-        output += computeRefraction(current_hit, object->material, iterations) * object->material.color;
+        output += computeRefraction(current_hit, object->material, iterations) * object->getColorOnPosition(current_hit.Position);
     }
     else {
 
@@ -158,6 +156,11 @@ Image Scene::render()
 
     if (! traceFunction) {
         throw std::invalid_argument("Invalid rendering mode : " + std::to_string(mode));
+    }
+
+    if (refractedShadows.has_value() && (mode == GOOCH || mode == PHONG)) {
+        computeRefractedShadows();
+        std::cout << "refracted shadows computed" << std::endl;
     }
 
     int w = img.width();
@@ -283,10 +286,8 @@ Color Scene::computeReflection(const Hit& current_hit, const Material& material,
     return trace(reflected, iterations - 1) * material.ks;
 }
 
-Color Scene::computeRefraction(const Hit& current_hit, const Material& material, int iterations) {
 
-    Color output{};
-
+Vector getRefractedDirection(const Hit& current_hit, const Material& material) {
     // source: https://computergraphics.stackexchange.com/questions/4573/refraction-in-a-ray-tracer-what-do-with-an-intersection-within-the-medium
 
     double cosIncidence = current_hit.Source.Direction.dot(current_hit.Normal);
@@ -304,8 +305,19 @@ Color Scene::computeRefraction(const Hit& current_hit, const Material& material,
     double indexRatio = index1 / index2;
     double k = 1 - indexRatio * indexRatio * (1 - cosIncidence * cosIncidence);
 
-    if (k >= 0) {
-        Vector refractedDirection = indexRatio * current_hit.Source.Direction + (indexRatio * cosIncidence - std::sqrt(k)) * normal;
+    if (k >= 0)
+        return indexRatio * current_hit.Source.Direction + (indexRatio * cosIncidence - std::sqrt(k)) * normal;
+    else
+        return Vector{0, 0, 0};
+}
+
+Color Scene::computeRefraction(const Hit& current_hit, const Material& material, int iterations) {
+
+    Color output{};
+
+    Vector refractedDirection = getRefractedDirection(current_hit, material);
+
+    if (refractedDirection != Vector{0, 0, 0}) {
         output += trace(Ray{current_hit.Position + refractedDirection * 0.1, refractedDirection}, iterations - 1);
     }
     else {
@@ -341,11 +353,18 @@ Color Scene::computePhong(const Hit& current_hit, Scene::IlluminationType illumi
 
             if (lightFactor > 0) {
                 if (illumination & diffuse)
-                    output += lightFactor *
-                            light_source->computeDiffusePhongAt(current_hit, object_hit->material, colorOnHit);
+                    output += lightFactor * light_source->computeDiffusePhongAt(current_hit, object_hit->material, colorOnHit);
                 if (illumination & specular)
                     output += lightFactor * light_source->computeSpecularPhongAt(current_hit, object_hit->material, specularOnHit);
             }
+
+            std::array<double, 3> additionalLightFactor = object_hit->getAdditionalLightFactor(*light_source, current_hit.Position);
+
+
+            for (std::size_t i = 0; i < 3; ++i) {
+                output[i] += light_source->color[i] * additionalLightFactor[i];
+            }
+
         }
     }
 
@@ -371,4 +390,153 @@ Color Scene::computeGooch(const Hit &current_hit, Scene::IlluminationType illumi
 
 void Scene::setMaxIterations(int iterations) {
     maxIterations = iterations;
+}
+
+void Scene::computeRefractedShadows() {
+
+    #pragma omp parallel for
+    for (int i = 0; i < objects.size(); ++i) {
+        const auto &target = objects[i];
+        if (target->material.type == MaterialType::REFRACTION) {
+            for (const auto &light : lights) {
+                Vector direction = target->Position - light->Position;
+                Vector deltaUp = getAnyOrthogonalVector(direction).normalized() * refractedShadows->precision;
+                Vector deltaSide = getThirdOrthogonalVector(direction, deltaUp).normalized() * refractedShadows->precision;
+
+                auto computeAt = [this, &target, &light, &direction, &deltaUp, &deltaSide] (int x, int y) {
+                    return computeRefractedShadowsAt(target, light, direction, deltaUp, deltaSide, {x, y});
+                };
+
+                computeAt(0, 0);
+                for (int dx : {1, -1}) {
+                    int x = dx;
+                    while (computeAt(x, 0)) {
+                        for (int dy : {1, -1}) {
+                            int y = dy;
+                            while (computeAt(x, y)) {
+                                y += dy;
+                            }
+                        }
+                        x += dx;
+                    }
+                }
+
+            }
+        }
+    }
+
+    smoothenRefractedShadows();
+}
+
+bool Scene::computeRefractedShadowsAt(
+        const std::unique_ptr<Object>& target,
+        const std::unique_ptr<Light>& light,
+        const Vector& direction, const Vector& deltaUp, const Vector& deltaSide,
+        const std::array<int, 2>& currentCoordinates) {
+
+    if (target->material.type != MaterialType::REFRACTION) return false;
+
+    Vector currentDirection = direction
+            + deltaUp*currentCoordinates[0]
+            + deltaSide*currentCoordinates[1];
+
+    Ray currentRay{light->Position, currentDirection};
+
+    const std::unique_ptr<Object>& objectHit = getObjectHitBy(currentRay);
+
+    // No hit? Return background color.
+    Hit current_hit = objectHit->intersect(currentRay);
+    if (current_hit == Hit::NO_HIT() || objectHit != target) return false;
+
+    computeRefractedLightBeam(light, current_hit, objectHit, objectHit->getColorOnPosition(current_hit.Position));
+
+    return true;
+}
+
+
+void Scene::computeRefractedLightBeam(const std::unique_ptr<Light> &light, const Hit &hit,
+                                      const std::unique_ptr<Object> &objectHit, const Color &currentColor) {
+
+    if (objectHit->material.type == MaterialType::REFRACTION) {
+        Vector refractedDirection = getRefractedDirection(hit, objectHit->material);
+        if (refractedDirection == Vector{0, 0, 0}) return;
+
+        Ray nextRay{hit.Position + refractedDirection * 0.1, refractedDirection};
+        const std::unique_ptr<Object>& nextObjectHit = getObjectHitBy(nextRay);
+        Hit nextHit = nextObjectHit->intersect(nextRay);
+        if (nextHit == Hit::NO_HIT()) return;
+
+        computeRefractedLightBeam(light, nextHit, nextObjectHit,
+                                  currentColor * nextObjectHit->getColorOnPosition(nextHit.Position));
+    }
+    else {
+        if (objectHit->material.refractedLightMaps.find(*light) == objectHit->material.refractedLightMaps.end()) {
+            objectHit->material.refractedLightMaps.emplace(std::make_pair(*light, BaseImage<std::optional<std::array<double, 3>>>(refractedShadows->textureSize, refractedShadows->textureSize)));
+        }
+
+        std::array<double, 2> uv = objectHit->getTextureCoordinatesFor(hit.Position);
+        std::optional<std::array<double, 3>>& pixel = objectHit->material.refractedLightMaps[*light].colorAt(uv[0], uv[1]);
+
+        if (! pixel.has_value())
+            pixel.emplace(std::array<double, 3>{0, 0, 0});
+
+        for (std::size_t i = 0; i < 3; ++i) {
+            pixel.value()[i] += currentColor[i] * refractedShadows->precision * refractedShadows->intensityFactor;
+        }
+    }
+}
+
+void Scene::smoothenRefractedShadows() {
+
+    for (auto & object : objects) {
+        for (auto& pair : object->material.refractedLightMaps) {
+            auto originalImage = pair.second;
+            auto& smoothedImage = pair.second;
+            auto distanceFunction = [] (int dx, int dy) { return dx * dx + dy * dy; };
+
+            if (refractedShadows->smoothingFactor > 1) {
+
+                #pragma omp parallel for
+                for (int x = 0; x < originalImage.width(); ++x) {
+                    for (std::size_t y = 0; y < originalImage.height(); ++y) {
+
+                        if (originalImage(x, y).has_value()) {
+                            const auto &origin = originalImage(x, y);
+
+                            for (int dx = -10; dx < 10; ++dx) {
+                                int xpos = x + dx;
+                                if (xpos < 0 || xpos >= originalImage.width()) continue;
+
+                                for (int dy = -10; dy < 10; ++dy) {
+
+                                    int ypos = y + dy;
+                                    if (ypos < 0 || ypos >= originalImage.height()) continue;
+
+                                    double distance = distanceFunction(dx, dy);
+                                    if (distance >= refractedShadows->smoothingFactor) continue;
+
+                                    auto &destination = smoothedImage(xpos, ypos);
+                                    if (!destination.has_value())
+                                        destination.emplace(std::array<double, 3>{0, 0, 0});
+
+                                    for (std::size_t i = 0; i < destination.value().size(); ++i) {
+                                        (*destination)[i] = std::max((*destination)[i],
+                                                                     (*origin)[i] - distance / refractedShadows->smoothingFactor);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            for (std::size_t x = 0; x < smoothedImage.width(); ++x) {
+                for (std::size_t y = 0; y < smoothedImage.height(); ++y) {
+                    if (! smoothedImage(x, y).has_value())
+                        smoothedImage(x, y).emplace(std::array<double, 3>{0, 0, 0});
+                }
+            }
+        }
+    }
 }

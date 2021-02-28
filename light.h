@@ -21,10 +21,13 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
-#include "scene.h"
 #include "material.h"
 #include "triple.h"
 #include "commongeometry.h"
+
+class Color;
+class Hit;
+struct Material;
 
 
 struct GoochIlluminationModel;
@@ -95,21 +98,7 @@ public:
     Light(Point Position, Color c, float size) : Position(Position), color(c), Size(size)
     { }
 
-    [[nodiscard]] virtual Color computeSpecularPhongAt(const Hit& hit_point, const Material& material, double specularValueOnHit) const {
-        Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
-        ray_reflection.normalize();
-        Vector lightIncidence = Position - hit_point.Position;
-        lightIncidence.normalize();
-
-        double specularFactor = ray_reflection.dot(lightIncidence);
-        if (specularFactor < 0){
-            specularFactor = 0;
-        }
-        Color specularColor = color * specularValueOnHit * pow(specularFactor,material.n);
-
-        return specularColor;
-
-    }
+    [[nodiscard]] virtual Color computeSpecularPhongAt(const Hit& hit_point, const Material& material, double specularValueOnHit) const;
 
     [[nodiscard]] virtual Color computeDiffusePhongAt(const Hit&, const Material&, const Color& colorOnHit) const;
     [[nodiscard]] virtual Color computeDiffuseGoochAt(const Hit&, const Material&, const Color& colorOnHit, GoochIlluminationModel illuminationModel) const;
@@ -121,18 +110,7 @@ public:
 };
 
 
-namespace std {
-    template<>
-    struct hash<Light> {
-        std::size_t operator()(Light const &light) const noexcept {
-            return hash_combine<double>(154945235,
-                                        hash<Vector>{}(light.Position),
-                                        hash<Color>{}(light.color),
-                                        light.Size
-                                        );
-        }
-    };
-}
+bool operator==(const Light&, const Light&);
 
 
 #endif /* end of include guard: LIGHT_H_PG2BAJRA */

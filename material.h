@@ -15,13 +15,20 @@
 #ifndef MATERIAL_H_TWMNT2EJ
 #define MATERIAL_H_TWMNT2EJ
 
+#include <unordered_map>
 #include <iostream>
 #include <optional>
+#include <array>
+#include "light.h"
 #include "triple.h"
 #include "yaml/node.h"
 #include "image.h"
 
 class Light;
+
+struct CustomLightHash {
+    std::size_t operator()(Light const &light) const noexcept;
+};
 
 enum MaterialType { DEFAULT, REFLECTION, REFRACTION };
 
@@ -34,7 +41,8 @@ struct Material
     std::optional<Image> normalMap;
 
 
-    std::map<Light, std::optional<Image>> refractedLightMap{};
+    std::unordered_map<Light, BaseImage<std::optional<std::array<double, 3>>>, CustomLightHash> refractedLightMaps{};
+
 
 
     double ka;          // ambient intensity

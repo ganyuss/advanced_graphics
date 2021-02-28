@@ -23,12 +23,12 @@
 class Sphere : public Object
 {
 public:
-    Sphere(Point Position,double Radius, Quaternion Rotation = Quaternion(0,0,0,1)) : Position(Position), Radius(Radius), Rotation(Rotation.normalized()) { }
+    Sphere(Point Position, double Radius, Quaternion Rotation = Quaternion(0,0,0,1)) :
+    Object(Position), Radius(Radius), Rotation(Rotation.normalized()) { }
 
     [[nodiscard]] Hit intersect(const Ray &ray) const override;
     [[nodiscard]] std::array<double, 2> getTextureCoordinatesFor(const Point &p) const override;
 
-    const Point Position;
     const double Radius;
     const Quaternion Rotation;
 };

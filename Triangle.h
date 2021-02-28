@@ -31,7 +31,7 @@ public:
     const std::array<Vertex, 3> Vertices;
 
     Triangle(Vertex vertex1, Vertex vertex2, Vertex vertex3)
-        : Vertices({vertex1, vertex2, vertex3})
+        : Object(vertex1.Position), Vertices({vertex1, vertex2, vertex3})
     { }
 
 

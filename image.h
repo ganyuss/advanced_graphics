@@ -15,114 +15,89 @@
 #ifndef IMAGE_H_IOLFQARK
 #define IMAGE_H_IOLFQARK
 
+#include "baseimage.h"
+
 #include <iostream>
 #include <cstring>
 #include <vector>
 #include "triple.h"
+#include "lodepng.h"
 
 
-class Image
+class Image : public BaseImage<Color>
 {
-protected:
-    std::vector<Color> _pixel;
-    int _width;
-    int _height;
-
 public:
-    Image(int width=0, int height=0)
-        : _pixel(), _width(0), _height(0)
-    {
-        set_extent(width, height);    //creates array
-    }
+    Image()
+        : BaseImage()
+    { }
+
+    Image(int width, int height)
+            : BaseImage(width, height)
+    { }
 
     Image(const char *imageFilename)
-        : _pixel(), _width(0), _height(0)
+        : BaseImage()
     {
         read_png(imageFilename);
     }
 
-
-    // Normal accessors
-    inline void put_pixel(int x, int y, Color c);
-    inline Color get_pixel(int x, int y) const;
-
-    // Handier accessors
-    // Usage: color = img(x,y);
-    //        img(x,y) = color;
-    inline const Color& operator()(int x, int y) const;
-    inline Color& operator()(int x, int y);
-
-    // Normalized accessors, interval is (0...1, 0...1)
-    inline const Color& colorAt(float x, float y) const;
-
-    // Normalized accessors for bumpmapping. Uses green component.
-    inline void derivativeAt(float x, float y, float *dx, float *dy) const;
-
-    // Image parameters
-    inline int width() const    { return _width; }
-    inline int height() const   { return _height; }
-    inline int size() const     { return _width * _height; }
-
-    // File stuff
-    void write_png(const char* filename) const;
-    void read_png(const char* filename);
-
-protected:
-
-    inline int index(int x, int y) const            //integer index
-    { return y * _width + x; }
-
-    inline int windex(int x, int y) const           //wrapped integer index
-    { return index(x % _width, y % _height); }
-
-    inline int findex(float x, float y) const       //float index
-    {
-        while (x > 1) x -= 1; while (x < 0) x += 1;
-        while (y > 1) y -= 1; while (y < 0) y += 1;
-
-        return index(int(x * (_width-1)), int(y * (_height-1)));
+    void write_png(const char* filename) const {
+        std::vector<unsigned char> image;
+        image.resize(_width * _height * 4);
+        auto imageIterator = image.begin();
+        auto currentPixel = _pixel.begin();
+        while (imageIterator != image.end()) {
+            *imageIterator = (unsigned char)(currentPixel->Red() * 255.0);
+            imageIterator++;
+            *imageIterator = (unsigned char)(currentPixel->Green() * 255.0);
+            imageIterator++;
+            *imageIterator = (unsigned char)(currentPixel->Blue() * 255.0);
+            imageIterator++;
+            *imageIterator = 255;
+            imageIterator++;
+            currentPixel++;
+        }
+        LodePNG::encode(filename, image, _width, _height);
     }
 
-    // Create a picture. Return false if failed.
-    void set_extent(int width, int height);
+
+
+    void read_png(const char* filename) {
+        std::vector<unsigned char> buffer, image;
+        //load the image file with given filename
+        LodePNG::loadFile(buffer, filename);
+
+        //decode the png
+        LodePNG::Decoder decoder;
+        decoder.decode(image, buffer.empty() ? nullptr : &buffer[0], (unsigned)buffer.size());
+
+        if (decoder.getChannels()<3 || decoder.getBpp()<24) {
+            std::cerr << "Error: only color (RGBA), 8 bit per channel png images are supported." << std::endl;
+            std::cerr << "Either convert your image or change the sourcecode." << std::endl;
+            exit(1);
+        }
+        int w = static_cast<int>(decoder.getWidth());
+        int h = static_cast<int>(decoder.getHeight());
+        set_extent(w,h);
+
+        // now convert the image data
+        auto imageIterator = image.begin();
+        auto currentPixel = _pixel.begin();
+        while (imageIterator != image.end()) {
+            currentPixel->Red() = (*imageIterator)/255.0;
+            imageIterator++;
+            currentPixel->Green() = (*imageIterator)/255.0;
+            imageIterator++;
+            currentPixel->Blue() = (*imageIterator)/255.0;
+            imageIterator++;
+            // Let's just ignore the alpha channel
+            imageIterator++;
+            currentPixel++;
+        }
+    }
 
 };
 
 
-//Inline functions
-
-inline void Image::put_pixel(int x, int y, Color c)
-{
-    (*this)(x, y) = c;
-}
-
-inline Color Image::get_pixel(int x, int y) const
-{
-    return (*this)(x, y);
-}
-
-inline const Color& Image::operator()(int x, int y) const
-{
-    return _pixel[index(x, y)];
-}
-
-inline Color& Image::operator()(int x, int y)
-{
-    return _pixel[index(x, y)];
-}
-
-inline const Color& Image::colorAt(float x, float y) const
-{
-    return _pixel[findex(x, y)];
-}
-
-inline void Image::derivativeAt(float x, float y, float *dx, float *dy) const
-{
-
-    int ix = (int)(x * (_width - 1));
-    int iy = (int)(y * (_height - 1));
-    *dx = _pixel[windex(ix,iy+1)].Green() - _pixel[index(ix,iy)].Green();
-    *dy = _pixel[windex(ix+1,iy)].Green() - _pixel[index(ix,iy)].Green();
-}
 
 #endif /* end of include guard: IMAGE_H_IOLFQARK */

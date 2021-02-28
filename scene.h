@@ -20,18 +20,21 @@
 #include <vector>
 #include <memory>
 #include <array>
+#include "material.h"
 #include "object.h"
 #include "triple.h"
 #include "image.h"
 #include "yaml/yaml.h"
 #include "commongeometry.h"
+#include "light.h"
+
 
 class Object;
 
 class Light;
 class Hit;
 class Ray;
-class Material;
+struct Material;
 
 enum Mode {PHONG, GOOCH, ZBUFFER, NORMAL, TEXTURE};
 
@@ -79,6 +82,13 @@ struct GoochIlluminationModel {
     double beta = 0.6;
 };
 
+struct RefractedShadowsParameters {
+    int textureSize = 400;
+    double smoothingFactor = 1;
+    double precision = 0.1;
+    double intensityFactor = 1;
+};
+
 
 class Scene
 {
@@ -98,6 +108,8 @@ public:
 
     unsigned int shadowEdgePrecision, shadowShadePrecision;
 
+    std::optional<RefractedShadowsParameters> refractedShadows;
+
     Color trace(const Ray &ray, int iterations);
     Color traceZBuf(const Ray &ray);
     Color traceNormals(const Ray &ray);
@@ -110,10 +122,22 @@ public:
     void setNear(int near);
     void setFar(int far);
     void setCamera(Camera c);
-    unsigned int getNumObjects() { return objects.size(); }
-    unsigned int getNumLights() { return lights.size(); }
+    unsigned int getNumObjects() const { return objects.size(); }
+    unsigned int getNumLights() const { return lights.size(); }
 
 private:
+    void computeRefractedShadows();
+    bool computeRefractedShadowsAt(
+            const std::unique_ptr<Object>& target,
+            const std::unique_ptr<Light>& light,
+            const Vector& direction, const Vector& deltaUp, const Vector& deltaSide,
+            const std::array<int, 2>& currentCoordinates);
+    void computeRefractedLightBeam(const std::unique_ptr<Light> &light, const Hit &hit,
+                                   const std::unique_ptr<Object> &objectHit, const Color &currentColor = Color{1, 1, 1});
+
+    void smoothenRefractedShadows();
+
+
     std::unique_ptr<Object>& getObjectHitBy(const Ray&);
     std::unique_ptr<Object>& getObjectHitBy(const Ray&, const std::unique_ptr<Object> &object_ignored);
     float getLightFactorFor(const std::unique_ptr<Light> &light, const Hit &hit, const std::unique_ptr<Object> &object_hit);

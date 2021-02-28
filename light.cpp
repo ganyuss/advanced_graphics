@@ -13,6 +13,7 @@
 //
 
 #include "light.h"
+#include "scene.h"
 
 
 Color Light::computeDiffusePhongAt(const Hit& hit_point, const Material& material, const Color& colorOnHit) const {
@@ -67,4 +68,26 @@ Color Light::computeSpecularGoochAt(const Hit& hit_point, const Material& materi
     Color specularColor = color * specularValueOnHit * pow(specularFactor,material.n);
 
     return specularColor;
+}
+
+Color Light::computeSpecularPhongAt(const Hit &hit_point, const Material &material, double specularValueOnHit) const {
+    Vector ray_reflection = -rotateAround(hit_point.Source.Direction, hit_point.Normal, 180);
+    ray_reflection.normalize();
+    Vector lightIncidence = Position - hit_point.Position;
+    lightIncidence.normalize();
+
+    double specularFactor = ray_reflection.dot(lightIncidence);
+    if (specularFactor < 0){
+        specularFactor = 0;
+    }
+    Color specularColor = color * specularValueOnHit * pow(specularFactor,material.n);
+
+    return specularColor;
+
+}
+
+bool operator==(const Light &l1, const Light &l2) {
+    return l1.Position == l2.Position
+            && l1.color == l2.color
+            && l1.Size == l2.Size;
 }

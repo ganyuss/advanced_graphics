@@ -14,6 +14,14 @@
 
 #include "material.h"
 
+std::size_t CustomLightHash::operator()(Light const &light) const noexcept {
+    return hash_combine<double>(154945235,
+                                std::hash<Vector>{}(light.Position),
+                                std::hash<Color>{}(light.color),
+                                light.Size
+                                );
+}
+
 void operator>>(const YAML::Node &node, MaterialType &type) {
     auto s = node.Read<std::string>();
     std::map<std::string, MaterialType> map{

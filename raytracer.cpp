@@ -16,7 +16,6 @@
 #include "sphere.h"
 #include "Cone.h"
 #include "TriangleAggregate.h"
-#include "Triangle.h"
 #include "box.h"
 #include <fstream>
 
@@ -52,6 +51,21 @@ bool tryRead<Mode>(const YAML::Node &node, Mode &variable, const Mode& defaultVa
     }
 
     return true;
+}
+
+template <>
+bool tryRead<RefractedShadowsParameters>(const YAML::Node &node, RefractedShadowsParameters &variable, const RefractedShadowsParameters& defaultValue) {
+
+    double precisionFactor;
+
+    bool isOk1 = tryRead(node, "TextureSize", variable.textureSize, defaultValue.textureSize);
+    bool isOk2 = tryRead(node, "SmoothingFactor", variable.smoothingFactor, defaultValue.smoothingFactor);
+    bool isOk3 = tryRead(node, "PrecisionFactor", precisionFactor, 1 / defaultValue.precision);
+    bool isOk4 = tryRead(node, "IntensityFactor", variable.intensityFactor, defaultValue.intensityFactor);
+
+    variable.precision = 1 / precisionFactor;
+
+    return isOk1 || isOk2 || isOk3 || isOk4;
 }
 
 template <>
@@ -453,7 +467,17 @@ bool Raytracer::readScene(const std::string& inputFilename)
                 scene.shadowShadePrecision = 3;
             }
 
+            bool shadowRefraction = false, refractedShadowsDefined = false;
+            RefractedShadowsParameters refractedShadowsParameters;
 
+            if (! tryRead(doc, "ShadowRefraction", shadowRefraction, false) || shadowRefraction) {
+                refractedShadowsDefined = tryRead(doc, "RefractedShadows", refractedShadowsParameters);
+
+
+                if (shadowRefraction || refractedShadowsDefined) {
+                    scene.refractedShadows = refractedShadowsParameters;
+                }
+            }
 
             // Read and parse the scene objects
             const YAML::Node& sceneObjects = doc["Objects"];

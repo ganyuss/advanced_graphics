@@ -13,13 +13,12 @@ class Quadrilateral : public Object {
 public:
 
     Quadrilateral(const Point& Position, const Vector& Up, const Vector& Side)
-        : Position(Position), Up(Up), Side(Side)
+        : Object(Position), Up(Up), Side(Side)
     { }
 
     [[nodiscard]] Hit intersect(const Ray &ray) const override;
     [[nodiscard]] std::array<double, 2> getTextureCoordinatesFor(const Point &) const override;
 
-    const Point Position;
     const Vector Up;
     const Vector Side;
 
@@ -34,7 +33,8 @@ private:
 
 class Box : public Object {
 public:
-    Box(const Point& Position, const Vector& Up, const Vector& Side, float Depth) : Faces(computeFaces(Position, Up, Side, Depth))  { }
+    Box(const Point& Position, const Vector& Up, const Vector& Side, float Depth) :
+    Object(Position), Faces(computeFaces(Position, Up, Side, Depth))  { }
 
     [[nodiscard]] Hit intersect(const Ray &ray) const override;
     [[nodiscard]] std::array<double, 2> getTextureCoordinatesFor(const Point &) const override;

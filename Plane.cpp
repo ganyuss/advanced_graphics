@@ -8,7 +8,7 @@
 Hit Plane::intersect(const Ray &ray) const {
     Vector rayOrthogonal = project(ray.Direction, Normal);
 
-    Vector shortestPath = project(Origin - ray.Origin, Normal);
+    Vector shortestPath = project(Position - ray.Origin, Normal);
 
     double t = shortestPath.norm() / rayOrthogonal.norm();
 
@@ -24,7 +24,7 @@ Hit Plane::intersect(const Ray &ray) const {
 }
 
 std::array<double, 2> Plane::getTextureCoordinatesFor(const Point &p) const {
-    Vector originToPoint = p - Origin;
+    Vector originToPoint = p - Position;
 
     // used the same formula as Quadrilateral in box.cpp
     double firstComponent = Normal.dot(UVVector1.cross(originToPoint)) * firstComponentFactor;

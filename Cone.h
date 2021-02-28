@@ -14,7 +14,7 @@
 class Cone : public Object {
 public:
     Cone(Point Position, Vector Side, Vector Up) :
-        Position(Position), Up(Up), DiskPlan(Position, Up), Side(Plane{Position, Up}.projectOn(Side)), Radius(Side.norm()),
+        Object(Position), Up(Up), DiskPlan(Position, Up), Side(Plane{Position, Up}.projectOn(Side)), Radius(Side.norm()),
         theta(std::atan(Side.norm() / Up.norm())), cosSquaredTheta(std::pow(std::cos(theta), 2)),
         v(-Up.normalized())
     { }
@@ -22,7 +22,6 @@ public:
     [[nodiscard]] Hit intersect(const Ray &ray) const override;
     [[nodiscard]] std::array<double, 2> getTextureCoordinatesFor(const Point &point) const override;
 
-    const Point Position;
     const Vector Side;
     const double Radius;
     const Vector Up;

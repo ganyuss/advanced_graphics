@@ -15,7 +15,6 @@
 //
 
 #include "sphere.h"
-#include "light.h"
 #include "Plane.h"
 #include <cmath>
 
