@@ -461,7 +461,7 @@ void Scene::computeRefractedLightBeam(const std::unique_ptr<Light> &light, const
         Vector refractedDirection = getRefractedDirection(hit, objectHit->material);
         if (refractedDirection == Vector{0, 0, 0}) return;
 
-        Ray nextRay{hit.Position + refractedDirection * 0.1, refractedDirection};
+        Ray nextRay{hit.Position + refractedDirection * 0.001, refractedDirection};
         const std::unique_ptr<Object>& nextObjectHit = getObjectHitBy(nextRay);
         Hit nextHit = nextObjectHit->intersect(nextRay);
         if (nextHit == Hit::NO_HIT()) return;
