@@ -1,0 +1,75 @@
+RenderMode : PHONG
+
+Camera:
+  eye: [-800, 600, 1000]
+  center: [0,0,0]
+  up: [0,1,0]
+  viewSize: [400,400]
+
+DistMin : -200
+DistMax : 1000
+SoftShadows: Off
+MaxIterations: 10
+SuperSampling:
+  factor: 1
+
+Lights:
+  - position: [-1000,1000,0]
+    color: [0.6, 0.6, 0.6]
+    size: 80
+  - position: [ 0,1000,1000 ]
+    color: [0.6, 0.6, 0.6]
+    size: 80
+
+Objects:
+  - type: cone
+    position: [ 0,150,0 ]
+    up: [ 30,100,0 ]
+    radius: 50
+    material:
+      color: [0.5, 1, 0.5]
+      ka: 0.2
+      kd: 0.8
+      ks: 0.5
+      n: 64
+      index: 2
+      type: refraction
+  - type: quadrilateral
+    position: [ -250,0,-250 ]
+    up: [ 500,0,0 ]
+    side: [ 0,0,500 ]
+    material:
+      texture: ../broken_wall.png
+      ka: 0.2
+      kd: 0.8
+      ks: 0.5
+      normalMap: ../broken_wall_normal.png
+      n: 64
+      index: 1
+      type: default
+  - type: quadrilateral
+    position: [ 250,0,-250 ]
+    up: [ 0,500,0 ]
+    side: [ 0,0,500 ]
+    material:
+      texture: ../broken_wall.png
+      ka: 0.2
+      kd: 0.8
+      ks: 0.5
+      normalMap: ../broken_wall_normal.png
+      n: 64
+      index: 1
+      type: default
+  - type: quadrilateral
+    position: [ -250,0,-250 ]
+    up: [ 0,500,0 ]
+    side: [ 500,0,0 ]
+    material:
+      texture: ../broken_wall.png
+      ka: 0.2
+      kd: 0.8
+      ks: 0.5
+      normalMap: ../broken_wall_normal.png
+      n: 64
+      index: 1
+      type: default
