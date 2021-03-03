@@ -4,6 +4,8 @@
 
 #include "TriangleAggregate.h"
 
+#define ENABLE_PLACEMENT false
+
 std::unordered_map<Point, const Triangle&> TriangleAggregate::parentOf{};
 
 Sphere TriangleAggregate::computeCircumscribedSphere() const {
@@ -50,6 +52,10 @@ Sphere TriangleAggregate::computeCircumscribedSphere() const {
 }
 
 Hit TriangleAggregate::intersect(const Ray &ray) const {
+
+#if ENABLE_PLACEMENT
+    return circumscribedSphere.intersect(ray);
+#endif
 
     if (circumscribedSphere.intersect(ray) == Hit::NO_HIT()) {
         return Hit::NO_HIT();
